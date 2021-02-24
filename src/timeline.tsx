@@ -25,6 +25,7 @@ import TimelineContext, {
   UpdateItemAction,
   RowRenderer,
   ColumnRenderer,
+  SidebarHeaderRenderer,
 } from './context';
 
 import { getTimelineData, Group, Item } from './timeline-data';
@@ -61,6 +62,7 @@ export interface TimelineProps<I extends Item, G extends Group, D = any>
   timebarHeaderRenderer?: TimebarHeaderRenderer;
   timebarIntervalHeight?: number;
   timebarIntervalRenderer: TimebarIntervalRenderer;
+  sidebarHeaderRenderer?: SidebarHeaderRenderer;
 }
 
 export default function Timeline<I extends Item, G extends Group, D = any>(
@@ -87,6 +89,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     timebarIntervalHeight = itemHeight,
     timebarHeaderHeight = 0,
     timebarHeaderRenderer = props => <div {...props} />,
+    sidebarHeaderRenderer = props => <div {...props} />,
     width,
     ...gridProps
   } = props;
@@ -267,6 +270,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         rowHeight,
         rowMap,
         rowRenderer,
+        sidebarHeaderRenderer,
         sidebarWidth,
         startDate,
         startTime,

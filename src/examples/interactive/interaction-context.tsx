@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  PropsWithChildren,
-  useRef,
-  useState,
-} from 'react';
+import React, { createContext, ReactNode, useRef, useState } from 'react';
 import { debounce } from 'lodash';
 
 export interface Interaction {
@@ -12,28 +7,28 @@ export interface Interaction {
   groupId: string;
 }
 
-export interface InteractiveContextValue {
+export interface InteractionContextValue {
   interaction: Interaction | null;
   setInteraction: (interaction: Interaction | null) => void;
 }
 
-const InteractiveContext = createContext<InteractiveContextValue>({
+const InteractionContext = createContext<InteractionContextValue>({
   interaction: null,
   setInteraction: () => undefined,
 });
 
-export function InteractiveContextProvider(props: PropsWithChildren<{}>) {
+export function InteractionContextProvider(props: { children?: ReactNode }) {
   const [interaction, setInteraction] = useState<Interaction | null>(null);
   const handleInteraction = useRef<typeof setInteraction>(
     debounce(setInteraction, 0, { leading: true })
   );
 
   return (
-    <InteractiveContext.Provider
+    <InteractionContext.Provider
       value={{ interaction, setInteraction: handleInteraction.current }}
       {...props}
     />
   );
 }
 
-export default InteractiveContext;
+export default InteractionContext;

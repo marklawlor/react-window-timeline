@@ -27,6 +27,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
       startTime,
       timebarIntervalRenderer: TimebarIntervalRenderer,
       timebarHeaderRenderer: TimebarHeaderRenderer,
+      sidebarHeaderRenderer: SidebarHeaderRenderer,
       rowRenderer: RowRenderer,
       columnRenderer: ColumnRenderer,
       timebarHeaderHeight,
@@ -52,18 +53,20 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
               key="timebar:head"
               style={{
                 ...stickyStyles,
-                display: 'block',
+                display: 'inline-block',
+                position: 'sticky',
                 top: 0,
                 left: 0,
                 height: timebarHeaderHeight,
                 zIndex: 3,
               }}
             />
+            <div key="timebar:head:line-break" />,
           </>
         )}
 
-        <div
-          key="sidebar:head"
+        <SidebarHeaderRenderer
+          key="sidebar:header"
           style={{
             ...stickyStyles,
             top: timebarHeaderHeight,
@@ -72,9 +75,6 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
             width: sidebarWidth,
             zIndex: 4,
             marginLeft: overscanColumnStartIndex * intervalWidth,
-            backgroundColor: 'white',
-            borderRight: '1px solid grey',
-            borderBottom: '1px solid grey',
           }}
         />
 

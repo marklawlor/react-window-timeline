@@ -10,7 +10,7 @@ import RowRenderer from '../common/row-renderer';
 import ColumnRenderer from '../common/column-renderer';
 
 import { randomGroups, randomItems } from '../generate-data';
-import { InteractiveContextProvider } from './interactive-context';
+import { InteractionContextProvider } from './interaction-context';
 
 export default function InteractiveExample(): ReactElement {
   const startDate = startOfDay(new Date());
@@ -32,7 +32,7 @@ export default function InteractiveExample(): ReactElement {
     0.75;
 
   return (
-    <InteractiveContextProvider>
+    <InteractionContextProvider>
       <Timeline
         columnRenderer={ColumnRenderer}
         endDate={endDate}
@@ -53,6 +53,6 @@ export default function InteractiveExample(): ReactElement {
         timebarIntervalRenderer={TimebarIntervalRenderer}
         width={width}
       />
-    </InteractiveContextProvider>
+    </InteractionContextProvider>
   );
 }

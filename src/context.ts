@@ -37,6 +37,11 @@ export interface TimebarHeaderProps {
 }
 export type TimebarHeaderRenderer = FC<TimebarHeaderProps>;
 
+export interface SidebarHeaderRendererProps {
+  style: CSSProperties;
+}
+export type SidebarHeaderRenderer = FC<SidebarHeaderRendererProps>;
+
 export type UpdateItem<T extends Item = Item> = (item: T) => void;
 
 export enum UpdateItemAction {
@@ -77,6 +82,7 @@ export interface TimelineContextValue {
   timebarIntervalHeight: number;
   rowRenderer?: RowRenderer<any>;
   columnRenderer?: ColumnRenderer;
+  sidebarHeaderRenderer: SidebarHeaderRenderer;
   updateItem: UpdateItem;
   visibleArea: GridOnItemsRenderedProps;
   width: number;
@@ -110,6 +116,7 @@ const TimelineContext = createContext<TimelineContextValue>({
   timebarIntervalHeight: 0,
   height: 0,
   updateItem: () => undefined,
+  sidebarHeaderRenderer: () => null,
   width: 0,
   outerElementRef: { current: null },
   visibleArea: {

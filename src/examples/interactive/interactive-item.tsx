@@ -10,7 +10,7 @@ import interact from '@interactjs/interact';
 import { Interactable, Rect } from '@interactjs/types';
 
 import { ItemRenderer, TimelineContext, UpdateItemAction } from '../../../src';
-import InteractiveContext, { Interaction } from './interactive-context';
+import InteractionContext, { Interaction } from './interaction-context';
 
 function getLocale() {
   return navigator.languages && navigator.languages.length
@@ -30,7 +30,7 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
   const interactableRef = useRef<Interactable | null>(null);
   const nodeRef = useRef<HTMLDivElement | null>(null);
 
-  const { setInteraction } = useContext(InteractiveContext);
+  const { setInteraction } = useContext(InteractionContext);
 
   const { groups } = itemData;
 

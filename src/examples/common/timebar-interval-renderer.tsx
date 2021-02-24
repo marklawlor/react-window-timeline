@@ -1,7 +1,7 @@
 import React, { ReactElement, useContext } from 'react';
 
 import { TimebarIntervalRendererProps, TimelineContext } from '../../../src';
-import InteractiveContext from '../interactive/interactive-context';
+import InteractionContext from '../interactive/interaction-context';
 
 function getLocale() {
   return navigator.languages && navigator.languages.length
@@ -14,7 +14,7 @@ export default function TimebarIntervalRenderer({
   style,
 }: TimebarIntervalRendererProps): ReactElement {
   const { sidebarWidth, intervalDuration } = useContext(TimelineContext);
-  const { interaction } = useContext(InteractiveContext);
+  const { interaction } = useContext(InteractionContext);
 
   let isActive = false;
 
