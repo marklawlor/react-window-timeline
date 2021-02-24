@@ -1,0 +1,16 @@
+{
+  "version": "0.1",
+  "language": "en",
+  "words": [
+    "dropzone",
+    "gesturable",
+    "interactable",
+    "interactjs",
+    "overscan",
+    "timebar",
+    "unmount",
+    "upsert"
+  ],
+  "flagWords": [],
+  "ignorePaths": ["cspell.json", "tsconfig.json", "package.json"]
+}
