@@ -174,7 +174,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
       };
 
       if (action !== UpdateItemAction.RESIZE) {
-        const top = event.clientY + scrollTop - outerElement.left;
+        const top = event.clientY + scrollTop - outerElement.top;
 
         const row = Array.from(rowMap.values()).find(row => {
           return row.top <= top && row.top + row.height >= top;
