@@ -1,8 +1,14 @@
-import React, { CSSProperties, forwardRef, useContext } from 'react';
+import React, {
+  CSSProperties,
+  forwardRef,
+  useCallback,
+  useContext,
+} from 'react';
 import range from './utils/range';
 import TimelineContext from './context';
 import { getPositionAtTime } from './utils/time';
 import { getUnmappedItem } from './timeline-data';
+import mergeRefs from 'react-merge-refs';
 
 const stickyStyles: CSSProperties = {
   position: 'sticky',
@@ -33,6 +39,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
       timebarHeaderHeight,
       timebarIntervalHeight,
       timebarHeight,
+      width,
       visibleArea: {
         overscanRowStopIndex,
         overscanRowStartIndex,
@@ -45,8 +52,30 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
       rowIndex => rowMap.get(rowIndex + overscanRowStartIndex)!
     );
 
+    const measureScrollbarWidth = useCallback(innerElement => {
+      if (!innerElement) {
+        return;
+      }
+      const outerElement = innerElement.parentElement;
+
+      const scrollbarWidth =
+        outerElement.offsetWidth - outerElement.clientWidth;
+
+      document.documentElement.style.setProperty(
+        '--rwt-inner-element-scrollbar-width',
+        `${scrollbarWidth}px`
+      );
+    }, []);
+
     return (
-      <div ref={ref} style={{ ...style, whiteSpace: 'nowrap' }} {...props}>
+      <div
+        ref={mergeRefs([ref, measureScrollbarWidth])}
+        style={{
+          ...style,
+          whiteSpace: 'nowrap',
+        }}
+        {...props}
+      >
         {timebarHeaderHeight > 0 && (
           <>
             <TimebarHeaderRenderer
@@ -55,13 +84,15 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                 ...stickyStyles,
                 display: 'inline-block',
                 position: 'sticky',
+                width: `calc(${width}px - var(--rwt-inner-element-scrollbar-width, 0px))`,
                 top: 0,
                 left: 0,
+                right: 0,
                 height: timebarHeaderHeight,
                 zIndex: 3,
               }}
             />
-            <div key="timebar:head:line-break" />,
+            <div key="timebar:head:line-break" />
           </>
         )}
 

@@ -1,31 +1,22 @@
-import React, { ReactElement, useContext } from 'react';
+import React, { ReactElement } from 'react';
 
-import { TimebarHeaderProps, TimelineContext } from '../../../src';
+import { TimebarHeaderProps } from '../../../src';
 
 export default function TimebarHeaderRenderer({
   style,
 }: TimebarHeaderProps): ReactElement {
-  const { width } = useContext(TimelineContext);
-
   return (
     <div
       style={{
         ...style,
         backgroundColor: 'white',
+        display: 'inline-flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderBottom: '1px solid grey',
       }}
     >
-      <div
-        style={{
-          width,
-          position: 'sticky',
-          left: 0,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        Example timeline
-      </div>
+      Example timeline
     </div>
   );
 }
