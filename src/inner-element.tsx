@@ -125,6 +125,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                   zIndex: 3,
                   verticalAlign: 'top',
                   boxSizing: 'border-box',
+                  overflow: 'hidden',
                 }}
               />,
             ];
