@@ -41,8 +41,11 @@ type VariableSizeGridPropsOmitted =
   | 'rowCount'
   | 'rowHeight';
 
-export interface TimelineProps<I extends Item, G extends Group, D = any>
-  extends Omit<VariableSizeGridProps, VariableSizeGridPropsOmitted> {
+export interface TimelineProps<
+  I extends Item = Item,
+  G extends Group = Group,
+  D = any
+> extends Omit<VariableSizeGridProps, VariableSizeGridPropsOmitted> {
   columnRenderer?: ColumnRenderer;
   endDate: Date;
   groupRenderer: GroupRenderer<G>;
