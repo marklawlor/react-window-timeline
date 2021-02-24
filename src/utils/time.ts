@@ -34,11 +34,11 @@ export function snapTime(time: number, snapDuration: number): number {
 export function getPositionAtTime(
   time: number,
   startTime: number,
-  interval: number,
+  intervalDuration: number,
   intervalWidth: number,
   sidebarWidth: number
 ) {
-  const numberOfIntervals = (time - startTime) / interval;
+  const numberOfIntervals = (time - startTime) / intervalDuration;
   const left = numberOfIntervals * intervalWidth;
 
   return left + sidebarWidth;
@@ -47,7 +47,7 @@ export function getPositionAtTime(
 export function getTimeAtPosition(
   left: number,
   startTime: number,
-  interval: number,
+  intervalDuration: number,
   intervalWidth: number,
   sidebarWidth: number,
   snapDuration: number
@@ -55,5 +55,8 @@ export function getTimeAtPosition(
   const actualLeft = left - sidebarWidth;
   const numberOfIntervals = actualLeft / intervalWidth;
 
-  return snapTime(numberOfIntervals * interval + startTime, snapDuration);
+  return snapTime(
+    numberOfIntervals * intervalDuration + startTime,
+    snapDuration
+  );
 }

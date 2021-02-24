@@ -1,5 +1,4 @@
 import React, {
-  forwardRef,
   ReactElement,
   useCallback,
   useMemo,
@@ -7,14 +6,12 @@ import React, {
   useState,
 } from 'react';
 
-import mergeRefs from 'react-merge-refs';
 import {
   GridOnItemsRenderedProps,
   VariableSizeGrid,
   VariableSizeGridProps,
 } from 'react-window';
 
-import innerElementType from './inner-element';
 import TimelineContext, {
   GroupRenderer,
   ItemRenderer,
@@ -28,8 +25,14 @@ import TimelineContext, {
   SidebarHeaderRenderer,
 } from './context';
 
+import innerElementType from './inner-element';
 import { getTimelineData, Group, Item } from './timeline-data';
-import { getIntervals, getTimeAtPosition, snapTime } from './utils/time';
+import {
+  getIntervals,
+  getPositionAtTime,
+  getTimeAtPosition,
+  snapTime,
+} from './utils/time';
 
 type VariableSizeGridPropsOmitted =
   | 'children'
@@ -51,6 +54,7 @@ export interface TimelineProps<
   groupRenderer: GroupRenderer<G>;
   groups: Group[];
   intervalDuration: number;
+  initialScrollTime?: number;
   intervalWidth: number;
   itemData?: D;
   itemHeight?: number;
@@ -94,11 +98,13 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     timebarHeaderRenderer = props => <div {...props} />,
     sidebarHeaderRenderer = props => <div {...props} />,
     width,
+    initialScrollLeft = 0,
+    initialScrollTime,
     ...gridProps
   } = props;
 
   const gridRef = useRef<VariableSizeGrid>(null);
-  const outerElementRef = useRef<HTMLDivElement>(null);
+  const outerRef = useRef<HTMLDivElement>(null);
   const startTime = snapTime(startDate.getTime(), snapDuration);
   const endTime = snapTime(endDate.getTime(), snapDuration);
   const timebarHeight = timebarIntervalHeight + timebarHeaderHeight;
@@ -122,14 +128,6 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     });
   }, [groups, items, intervals, itemHeight, timebarHeight, snapDuration]);
 
-  const outerElementType = useMemo(
-    () =>
-      forwardRef(function TimelineOuter(props, ref) {
-        return <div ref={mergeRefs([outerElementRef, ref])} {...props} />;
-      }),
-    []
-  );
-
   const getValuesToUpdate: TimelineContextValue['getValuesToUpdate'] = useCallback(
     (event, action) => {
       if (!event.target) {
@@ -137,15 +135,15 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
       }
 
       const targetBox = event.target.getBoundingClientRect();
-      const outerElement = outerElementRef.current?.getBoundingClientRect() || {
+      const outerElement = outerRef.current?.getBoundingClientRect() || {
         left: 0,
         right: 0,
         top: 0,
         bottom: 0,
       };
 
-      const scrollLeft = outerElementRef.current?.scrollLeft || 0;
-      const scrollTop = outerElementRef.current?.scrollTop || 0;
+      const scrollLeft = outerRef.current?.scrollLeft || 0;
+      const scrollTop = outerRef.current?.scrollTop || 0;
 
       const left = targetBox.left + scrollLeft - outerElement.left;
       const right = targetBox.right + scrollLeft - outerElement.left;
@@ -251,6 +249,19 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     [rowMap]
   );
 
+  const initialScrollX = !initialScrollTime
+    ? initialScrollLeft
+    : Math.max(
+        0,
+        getPositionAtTime(
+          initialScrollTime,
+          startTime,
+          intervalDuration,
+          intervalWidth,
+          sidebarWidth
+        ) - sidebarWidth
+      );
+
   return (
     <TimelineContext.Provider
       value={{
@@ -268,7 +279,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         itemHeight,
         itemRenderer,
         minItemWidth,
-        outerElementRef,
+        outerRef,
         rowCount,
         rowHeight,
         rowMap,
@@ -296,9 +307,10 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         columnWidth={columnWidth}
         innerElementType={innerElementType}
         onItemsRendered={setVisibleArea}
-        outerElementType={outerElementType}
+        outerRef={outerRef}
         rowCount={rowCount}
         rowHeight={rowHeight}
+        initialScrollLeft={initialScrollX}
       >
         {noopRenderer}
       </VariableSizeGrid>

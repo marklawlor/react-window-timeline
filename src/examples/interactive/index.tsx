@@ -1,5 +1,5 @@
 import React, { ReactElement, useMemo } from 'react';
-import { addDays, startOfDay } from 'date-fns';
+import { addDays, addMinutes, startOfDay } from 'date-fns';
 
 import Timeline from '../../../src';
 import InteractiveItemRenderer from './interactive-item';
@@ -27,10 +27,6 @@ export default function InteractiveExample(): ReactElement {
 
   const groupMap = Object.fromEntries(groups.map(group => [group.id, group]));
 
-  const width =
-    parseInt(window.getComputedStyle(document.body).getPropertyValue('width')) *
-    0.75;
-
   return (
     <InteractionContextProvider>
       <Timeline
@@ -47,11 +43,12 @@ export default function InteractiveExample(): ReactElement {
         rowRenderer={RowRenderer}
         sidebarWidth={100}
         startDate={startDate}
+        initialScrollTime={addMinutes(startDate, 3 * 60).getTime()}
         timebarHeaderHeight={50}
         timebarHeaderRenderer={TimebarHeaderRenderer}
         timebarIntervalHeight={50}
         timebarIntervalRenderer={TimebarIntervalRenderer}
-        width={width}
+        width={500}
       />
     </InteractionContextProvider>
   );

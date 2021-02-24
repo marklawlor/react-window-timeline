@@ -87,7 +87,7 @@ export interface TimelineContextValue {
   visibleArea: GridOnItemsRenderedProps;
   width: number;
   height: number;
-  outerElementRef: RefObject<HTMLDivElement>;
+  outerRef: RefObject<HTMLDivElement>;
 }
 
 const TimelineContext = createContext<TimelineContextValue>({
@@ -118,7 +118,7 @@ const TimelineContext = createContext<TimelineContextValue>({
   updateItem: () => undefined,
   sidebarHeaderRenderer: () => null,
   width: 0,
-  outerElementRef: { current: null },
+  outerRef: { current: null },
   visibleArea: {
     overscanColumnStartIndex: 0,
     overscanColumnStopIndex: 0,
