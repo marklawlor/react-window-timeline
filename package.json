@@ -29,6 +29,11 @@
       "pre-commit": "tsdx lint"
     }
   },
+  "keywords": [
+    "react",
+    "timeline",
+    "calendar"
+  ],
   "prettier": {
     "printWidth": 80,
     "semi": true,
