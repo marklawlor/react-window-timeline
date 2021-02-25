@@ -12,6 +12,7 @@ import ColumnRenderer from '../common/column-renderer';
 
 import { randomGroups, randomItems } from '../generate-data';
 import { InteractionContextProvider } from './interaction-context';
+import SidebarHeaderRenderer from '../common/sidebar-header-renderer';
 
 export default function InteractiveExample(): ReactElement {
   const startTime = startOfDay(new Date()).getTime();
@@ -41,22 +42,23 @@ export default function InteractiveExample(): ReactElement {
                 endTime={endTime}
                 width={width}
                 height={height}
+                items={items}
                 groups={groups}
                 intervalDuration={intervalDuration}
                 sidebarWidth={sidebarWidth}
                 intervalWidth={intervalWidth}
+                timebarIntervalHeight={50}
+                timebarHeaderHeight={50}
                 itemHeight={20}
+                initialScrollTime={addMinutes(startTime, 3 * 60).getTime()}
                 itemData={{ groups: groupMap }}
                 itemRenderer={InteractiveItemRenderer}
-                items={items}
-                initialScrollTime={addMinutes(startTime, 3 * 60).getTime()}
                 columnRenderer={ColumnRenderer}
                 groupRenderer={GroupRenderer}
                 rowRenderer={RowRenderer}
-                timebarHeaderHeight={50}
                 timebarHeaderRenderer={TimebarHeaderRenderer}
-                timebarIntervalHeight={50}
                 timebarIntervalRenderer={TimebarIntervalRenderer}
+                sidebarHeaderRenderer={SidebarHeaderRenderer}
               />
             </InteractionContextProvider>
           );

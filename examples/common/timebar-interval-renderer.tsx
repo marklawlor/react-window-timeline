@@ -13,7 +13,7 @@ export default function TimebarIntervalRenderer({
   time,
   style,
 }: TimebarIntervalRendererProps): ReactElement {
-  const { sidebarWidth, intervalDuration } = useContext(TimelineContext);
+  const { intervalDuration } = useContext(TimelineContext);
   const { interaction } = useContext(InteractionContext);
 
   let isActive = false;
@@ -38,29 +38,20 @@ export default function TimebarIntervalRenderer({
   }
 
   return (
-    <>
-      <div
-        style={{
-          ...style,
-          display: 'inline-flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderRight: '1px solid grey',
-          borderBottom: '1px solid grey',
-          backgroundColor: isActive ? 'red' : 'white',
-        }}
-      >
-        <span
-          style={{
-            position: 'sticky',
-            left: sidebarWidth,
-          }}
-        >
-          {new Date(time).toLocaleString(getLocale(), {
-            timeStyle: 'short',
-          } as Intl.DateTimeFormatOptions)}
-        </span>
-      </div>
-    </>
+    <div
+      style={{
+        ...style,
+        display: 'inline-flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRight: '1px solid grey',
+        borderBottom: '1px solid grey',
+        backgroundColor: isActive ? 'red' : 'white',
+      }}
+    >
+      {new Date(time).toLocaleString(getLocale(), {
+        timeStyle: 'short',
+      } as Intl.DateTimeFormatOptions)}
+    </div>
   );
 }

@@ -1,10 +1,9 @@
-import React, { CSSProperties, memo, ReactElement, useContext } from 'react';
-import { areEqual } from 'react-window';
+import React, { CSSProperties, ReactElement, useContext } from 'react';
 
 import { Group, TimelineContext, GroupRendererProps } from '../../src';
 import InteractionContext from '../interactive/interaction-context';
 
-function GroupRenderer({
+export default function GroupRenderer({
   group,
   style,
 }: GroupRendererProps<
@@ -40,5 +39,3 @@ function GroupRenderer({
     </div>
   );
 }
-
-export default memo(GroupRenderer, areEqual);
