@@ -1,7 +1,7 @@
 import React, { CSSProperties, memo, ReactElement, useContext } from 'react';
 import { areEqual } from 'react-window';
 
-import { Group, TimelineContext, GroupRendererProps } from '../../../src';
+import { Group, TimelineContext, GroupRendererProps } from '../../src';
 import InteractionContext from '../interactive/interaction-context';
 
 function GroupRenderer({

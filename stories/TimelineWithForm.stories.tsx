@@ -1,7 +1,7 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
 
-import Timeline from '..';
+import Timeline from '../src';
 import Interactive from '../examples/interactive';
 
 const meta: Meta = {

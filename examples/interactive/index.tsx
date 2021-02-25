@@ -1,7 +1,7 @@
 import React, { ReactElement, useMemo } from 'react';
 import { addDays, addMinutes, startOfDay } from 'date-fns';
 
-import Timeline from '../../../src';
+import Timeline from '../../src';
 import InteractiveItemRenderer from './interactive-item';
 import GroupRenderer from '../common/group-renderer';
 import TimebarIntervalRenderer from '../common/timebar-interval-renderer';

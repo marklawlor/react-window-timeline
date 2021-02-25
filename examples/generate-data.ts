@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
-import { Group, Item } from '../timeline-data';
-import range from '../utils/range';
+import { Group, Item } from '../src/timeline-data';
+import range from '../src/utils/range';
 
 export function randomGroups(
   n: number

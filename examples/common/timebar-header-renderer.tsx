@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 
-import { TimebarHeaderProps } from '../../../src';
+import { TimebarHeaderProps } from '../../src';
 
 export default function TimebarHeaderRenderer({
   style,

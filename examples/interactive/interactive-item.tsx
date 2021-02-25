@@ -9,7 +9,7 @@ import interact from '@interactjs/interact';
 
 import { Interactable, Rect } from '@interactjs/types';
 
-import { ItemRenderer, TimelineContext, UpdateItemAction } from '../../../src';
+import { ItemRenderer, TimelineContext, UpdateItemAction } from '../../src';
 import InteractionContext, { Interaction } from './interaction-context';
 
 function getLocale() {

@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 
-import { ColumnRendererProps } from '../../../src';
+import { ColumnRendererProps } from '../../src';
 
 export default function ColumnRenderer({
   style,

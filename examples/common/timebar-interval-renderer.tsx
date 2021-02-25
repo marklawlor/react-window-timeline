@@ -1,6 +1,6 @@
 import React, { ReactElement, useContext } from 'react';
 
-import { TimebarIntervalRendererProps, TimelineContext } from '../../../src';
+import { TimebarIntervalRendererProps, TimelineContext } from '../../src';
 import InteractionContext from '../interactive/interaction-context';
 
 function getLocale() {

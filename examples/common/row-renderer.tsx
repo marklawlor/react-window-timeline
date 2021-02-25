@@ -1,6 +1,6 @@
 import React, { CSSProperties, ReactElement, useContext } from 'react';
 
-import { Group, RowRendererProps } from '../../../src';
+import { Group, RowRendererProps } from '../../src';
 import InteractionContext from '../interactive/interaction-context';
 
 export default function RowRenderer({
