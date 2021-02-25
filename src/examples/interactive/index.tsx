@@ -19,7 +19,7 @@ export default function InteractiveExample(): ReactElement {
 
   const groups = useMemo(() => randomGroups(100), []);
 
-  const items = useMemo(() => randomItems(groups, 1, 20, startDate, endDate), [
+  const items = useMemo(() => randomItems(groups, 2, 2, startDate, endDate), [
     groups,
     startDate,
     endDate,
@@ -37,6 +37,7 @@ export default function InteractiveExample(): ReactElement {
         height={1000}
         intervalDuration={intervalDuration}
         intervalWidth={100}
+        itemHeight={100}
         itemData={{ groups: groupMap }}
         itemRenderer={InteractiveItemRenderer}
         items={items}
@@ -48,7 +49,7 @@ export default function InteractiveExample(): ReactElement {
         timebarHeaderRenderer={TimebarHeaderRenderer}
         timebarIntervalHeight={50}
         timebarIntervalRenderer={TimebarIntervalRenderer}
-        width={500}
+        width={750}
       />
     </InteractionContextProvider>
   );

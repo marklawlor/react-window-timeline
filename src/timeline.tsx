@@ -20,7 +20,7 @@ import TimelineContext, {
   TimebarHeaderRenderer,
   TimelineContextValue,
   TimebarIntervalRenderer,
-  UpdateItem,
+  UpsertItem,
   UpdateItemAction,
   RowRenderer,
   ColumnRenderer,
@@ -130,6 +130,24 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     });
   }, [groups, items, intervals, itemHeight, timebarHeight, snapDuration]);
 
+  const [stickyItemIds, setStickyItemIds] = useState<Array<Item['id']>>([]);
+  const handleSetStickyItemIds = useCallback(
+    (ids: Array<Item['id']>) => {
+      setStickyItemIds(
+        ids.map(id => {
+          const item = itemMap.get(id);
+
+          if (!item) {
+            throw new Error('Item is not mapped');
+          }
+
+          return id;
+        })
+      );
+    },
+    [setStickyItemIds, itemMap]
+  );
+
   const [
     {
       overscanColumnStartIndex,
@@ -152,6 +170,8 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     visibleRowStartIndex: 0,
     visibleRowStopIndex: 0,
   });
+
+  (window as any).a = () => setStickyItemIds(['0:1']);
 
   const getValuesToUpdate: TimelineContextValue['getValuesToUpdate'] = useCallback(
     (event, action) => {
@@ -225,31 +245,36 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     ]
   );
 
-  const updateItem = useCallback<UpdateItem<I>>(
+  const upsertItem = useCallback<UpsertItem<I>>(
     item => {
-      const previous = itemMap.get(item.id);
-      if (!previous) {
-        throw new Error(
-          'Tried to update item that was not previous in the timeline'
-        );
-      }
       const row = Array.from(rowMap.values()).find(
         ({ group }) => group.id === item.groupId
       );
+
       if (!row) {
         throw new Error(`Unable to find group with id ${item.groupId}`);
       }
-      if (item.groupId !== previous.groupId) {
+
+      const previous = itemMap.get(item.id);
+      if (previous && item.groupId !== previous.groupId) {
         previous.row.removeItem(item);
       }
 
-      row.upsertItem(item);
-      itemMap.set(item.id, { ...item, groupId: row.group.id, row });
+      row.addItem(item);
+      itemMap.set(
+        item.id,
+        Object.assign(item, {
+          end: snapTime(item.end, snapDuration),
+          groupId: row.group.id,
+          row,
+          start: snapTime(item.start, snapDuration),
+        })
+      );
       gridRef.current?.resetAfterRowIndex(
-        Math.min(row.index, previous.row.index)
+        Math.min(row.index, previous?.row.index || row.index)
       );
     },
-    [itemMap, rowMap]
+    [itemMap, rowMap, snapDuration]
   );
 
   const rowCount = groups.length;
@@ -285,6 +310,10 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     () => (groupRenderer ? memo(groupRenderer, areEqual) : undefined),
     [groupRenderer]
   );
+
+  const ItemRenderer = useMemo(() => memo(itemRenderer, areEqual), [
+    itemRenderer,
+  ]);
 
   const RowRenderer = useMemo(
     () => (rowRenderer ? memo(rowRenderer, areEqual) : undefined),
@@ -330,8 +359,9 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         intervalWidth,
         intervals,
         itemData,
+        itemMap,
         itemHeight,
-        itemRenderer,
+        ItemRenderer,
         minItemWidth,
         outerRef,
         overscanColumnStartIndex,
@@ -341,14 +371,16 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         rowCount,
         rowHeight,
         rowMap,
+        setStickyItemIds: handleSetStickyItemIds,
         sidebarWidth,
         snapDuration,
         startDate,
         startTime,
+        stickyItemIds,
         timebarHeaderHeight,
         timebarHeight,
         timebarIntervalHeight,
-        updateItem: updateItem as TimelineContextValue['updateItem'],
+        upsertItem: upsertItem as TimelineContextValue['upsertItem'],
         visibleColumnStartIndex,
         visibleColumnStopIndex,
         visibleRowStartIndex,

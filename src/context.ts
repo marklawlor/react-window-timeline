@@ -1,7 +1,7 @@
 import { createContext, CSSProperties, FC, RefObject } from 'react';
 import { VariableSizeGridProps } from 'react-window';
 
-import { Group, Item, RowMap } from './timeline-data';
+import { Group, Item, ItemMap, RowMap } from './timeline-data';
 
 export interface ItemRenderProps<T extends Item = Item> {
   item: T;
@@ -42,7 +42,7 @@ export interface SidebarHeaderRendererProps {
 }
 export type SidebarHeaderRenderer = FC<SidebarHeaderRendererProps>;
 
-export type UpdateItem<T extends Item = Item> = (item: T) => void;
+export type UpsertItem<T extends Item = Item> = (item: T) => void;
 
 export enum UpdateItemAction {
   MOVE,
@@ -74,9 +74,10 @@ export interface TimelineContextValue {
   intervalDuration: number;
   intervalWidth: number;
   intervals: number[];
+  itemMap: ItemMap;
   itemData: any;
   itemHeight: number;
-  itemRenderer: ItemRenderer<any>;
+  ItemRenderer: ItemRenderer<any>;
   minItemWidth: number;
   outerRef: RefObject<HTMLDivElement>;
   overscanColumnStartIndex: number;
@@ -87,6 +88,8 @@ export interface TimelineContextValue {
   rowHeight: VariableSizeGridProps['rowHeight'];
   rowMap: RowMap<Item>;
   SidebarHeaderRenderer: SidebarHeaderRenderer;
+  stickyItemIds: Array<Item['id']>;
+  setStickyItemIds: (items: Array<Item['id']>) => void;
   sidebarWidth: number;
   snapDuration: number;
   startDate: Date;
@@ -94,7 +97,7 @@ export interface TimelineContextValue {
   timebarHeaderHeight: number;
   timebarHeight: number;
   timebarIntervalHeight: number;
-  updateItem: UpdateItem;
+  upsertItem: UpsertItem;
   visibleColumnStartIndex: number;
   visibleColumnStopIndex: number;
   visibleRowStartIndex: number;
@@ -109,11 +112,12 @@ const TimelineContext = createContext<TimelineContextValue>({
   intervals: [],
   intervalDuration: 0,
   intervalWidth: 0,
+  itemMap: new Map(),
   itemData: {},
   itemHeight: 0,
   groups: [],
   snapDuration: 0,
-  itemRenderer: () => null,
+  ItemRenderer: () => null,
   GroupRenderer: () => null,
   TimebarIntervalRenderer: () => null,
   TimebarHeaderRenderer: () => null,
@@ -121,6 +125,8 @@ const TimelineContext = createContext<TimelineContextValue>({
   rowCount: 0,
   rowHeight: () => 0,
   rowMap: new Map(),
+  stickyItemIds: [],
+  setStickyItemIds: () => undefined,
   sidebarWidth: 0,
   startDate: new Date(0),
   startTime: 0,
@@ -130,7 +136,7 @@ const TimelineContext = createContext<TimelineContextValue>({
   timebarHeaderHeight: 0,
   timebarIntervalHeight: 0,
   height: 0,
-  updateItem: () => undefined,
+  upsertItem: () => undefined,
   SidebarHeaderRenderer: () => null,
   width: 0,
   outerRef: { current: null },

@@ -13,9 +13,9 @@ export interface Item {
   end: number;
 }
 
-export type MappedItem<T extends Item> = T & { row: Row<T> };
+export type MappedItem<T extends Item = Item> = T & { row: Row<T> };
 
-type ItemMap<T extends Item> = Map<string, MappedItem<T>>;
+export type ItemMap<T extends Item = Item> = Map<string, MappedItem<T>>;
 
 export type RowMap<T extends Item> = Map<number, Row<T>>;
 
@@ -48,8 +48,8 @@ export function getTimelineData<T extends Item>({
       index,
       intervals,
       itemHeight,
+      itemMap,
       rowMap,
-      snapDuration,
       timebarHeight,
     });
 

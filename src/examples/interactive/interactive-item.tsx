@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useContext, useRef } from 'react';
+import React, { useCallback, useContext, useRef } from 'react';
 
 import '@interactjs/auto-start';
 import '@interactjs/auto-scroll';
@@ -9,12 +9,7 @@ import interact from '@interactjs/interact';
 
 import { Interactable, Rect } from '@interactjs/types';
 
-import {
-  ItemRenderer,
-  TimelineContext,
-  UpdateItemAction,
-  areEqual,
-} from '../../../src';
+import { ItemRenderer, TimelineContext, UpdateItemAction } from '../../../src';
 import InteractionContext, { Interaction } from './interaction-context';
 
 function getLocale() {
@@ -26,10 +21,12 @@ function getLocale() {
 const InteractiveItem: ItemRenderer = ({ item, style }) => {
   const {
     itemData,
-    updateItem,
+    upsertItem,
     getValuesToUpdate,
     sidebarWidth,
     timebarHeight,
+    outerRef,
+    setStickyItemIds,
   } = useContext(TimelineContext);
 
   const interactableRef = useRef<Interactable | null>(null);
@@ -53,25 +50,43 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
       if (node) {
         const interactable: Interactable = interact(node);
 
+        const outerElement = outerRef.current!;
         let dragPosition = { x: 0, y: 0 };
+        let scrollPosition = { left: 0, top: 0 };
         let resizeOffset = { x: 0, y: 0 };
 
         interactable
           .draggable({
             autoScroll: {
-              container: node.parentElement!.parentElement!,
+              container: outerRef.current!,
               margin: 50,
               distance: 10,
               interval: 10,
               speed: 500,
             },
             listeners: {
+              start() {
+                setStickyItemIds([item.id]);
+
+                scrollPosition = {
+                  left: outerElement.scrollLeft,
+                  top: outerElement.scrollTop,
+                };
+              },
               move(event) {
                 dragPosition.x += event.dx;
                 dragPosition.y += event.dy;
 
+                const translateX =
+                  dragPosition.x +
+                  (outerElement.scrollLeft - scrollPosition.left);
+
+                const translateY =
+                  dragPosition.y +
+                  (outerElement.scrollTop - scrollPosition.top);
+
                 node.style.transition = '';
-                node.style.transform = `translate(${dragPosition.x}px, ${dragPosition.y}px)`;
+                node.style.transform = `translate(${translateX}px, ${translateY}px)`;
 
                 const updatedValues = getValuesToUpdate(
                   event,
@@ -81,7 +96,7 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
                 setInteraction(updatedValues);
               },
               end(event) {
-                updateItem({
+                upsertItem({
                   ...item,
                   ...getValuesToUpdate(event, UpdateItemAction.MOVE),
                 });
@@ -93,6 +108,7 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
                 node.style.transform = '';
                 dragPosition = { x: 0, y: 0 };
                 setInteraction(null);
+                setStickyItemIds([]);
               },
             },
             modifiers: [
@@ -107,9 +123,24 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
             ],
           })
           .resizable({
+            autoScroll: {
+              container: outerRef.current!,
+              margin: 50,
+              distance: 10,
+              interval: 10,
+              speed: 500,
+            },
             edges: { top: false, right: true, bottom: false, left: true },
             invert: 'reposition',
             listeners: {
+              start() {
+                setStickyItemIds([item.id]);
+
+                scrollPosition = {
+                  left: outerElement.scrollLeft,
+                  top: outerElement.scrollTop,
+                };
+              },
               move: function(event) {
                 const { width, height } = event.rect;
 
@@ -124,7 +155,7 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
                 });
               },
               end(event) {
-                updateItem({
+                upsertItem({
                   ...item,
                   ...getValuesToUpdate(event, UpdateItemAction.RESIZE),
                 });
@@ -172,4 +203,4 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
   );
 };
 
-export default memo(InteractiveItem, areEqual);
+export default InteractiveItem;

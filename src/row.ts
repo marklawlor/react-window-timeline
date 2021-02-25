@@ -1,14 +1,13 @@
-import { Group, Item, MappedItem, RowMap } from './timeline-data';
-import { snapTime } from './utils/time';
+import { Group, Item, ItemMap, MappedItem, RowMap } from './timeline-data';
 
 export interface RowOptions {
-  index: number;
   group: Group;
+  index: number;
   intervals: number[];
-  rowMap: RowMap<any>;
   itemHeight: number;
+  itemMap: ItemMap;
+  rowMap: RowMap<any>;
   timebarHeight: number;
-  snapDuration: number;
 }
 
 export default class Row<T extends Item = Item> {
@@ -17,10 +16,10 @@ export default class Row<T extends Item = Item> {
 
   intervals: number[];
   itemHeight: number;
-  items: MappedItem<T>[] = [];
+  itemIds: Set<Item['id']> = new Set();
+  itemMap: ItemMap;
   rowMap: RowMap<any>;
   timebarHeight: number;
-  snapDuration: number;
 
   private offsets: Record<string, number> = {};
 
@@ -31,17 +30,17 @@ export default class Row<T extends Item = Item> {
     index,
     intervals,
     itemHeight,
+    itemMap,
     rowMap,
-    snapDuration,
     timebarHeight,
   }: RowOptions) {
     this.group = group;
     this.index = index;
     this.intervals = intervals;
     this.itemHeight = itemHeight;
+    this.itemMap = itemMap;
     this.rowMap = rowMap;
     this.timebarHeight = timebarHeight;
-    this.snapDuration = snapDuration;
   }
 
   get height(): number {
@@ -66,22 +65,16 @@ export default class Row<T extends Item = Item> {
     return this.height + this.top;
   }
 
-  addItem(item: MappedItem<T>) {
-    this.items.push(item);
-  }
-
   recalculate() {
     this.offsets = {};
 
-    const sortedItems = Array.from(
-      this.items.sort((a, b) => {
-        if (a.start === b.start) {
-          return a.end - b.end;
-        }
+    const sortedItems = this.items.sort((a, b) => {
+      if (a.start === b.start) {
+        return a.end - b.end;
+      }
 
-        return a.start - b.start;
-      })
-    );
+      return a.start - b.start;
+    });
 
     let rowOffset = 0;
 
@@ -111,40 +104,18 @@ export default class Row<T extends Item = Item> {
     this._height = Math.max(rowOffset, 1) * this.itemHeight;
   }
 
-  upsertItem(item: T): void {
-    let index = this.items.findIndex(({ id }) => id === item.id);
+  get items() {
+    return Array.from(this.itemIds).map(id => this.itemMap.get(id)!);
+  }
 
-    if (index === -1) {
-      this.items.push({
-        ...item,
-        groupId: this.group.id,
-        start: snapTime(item.start, this.snapDuration),
-        end: snapTime(item.end, this.snapDuration),
-        row: this,
-      });
-    } else {
-      this.items.splice(index, 1, {
-        ...item,
-        groupId: this.group.id,
-        start: snapTime(item.start, this.snapDuration),
-        end: snapTime(item.end, this.snapDuration),
-        row: this,
-      });
-    }
-
+  addItem(item: Item) {
+    this.itemIds.add(item.id);
     // Force the height be be recalculated
     this._height = undefined;
   }
 
   removeItem(item: T): void {
-    const index = this.items.findIndex(({ id }) => id === item.id);
-
-    if (index === -1) {
-      throw new Error('Unable to find item');
-    }
-
-    this.items.splice(index, 1);
-
+    this.itemIds.delete(item.id);
     // Force the height be be recalculated
     this._height = undefined;
   }
@@ -153,10 +124,7 @@ export default class Row<T extends Item = Item> {
     return this.offsets[item.id as T['id']] * itemHeight;
   }
 
-  getItemsByIntervalRange(
-    startIndex: number,
-    endIndex: number
-  ): MappedItem<T>[] {
+  getItemsByIntervalRange(startIndex: number, endIndex: number): MappedItem[] {
     const start = this.intervals[startIndex];
     const end = this.intervals[endIndex];
 

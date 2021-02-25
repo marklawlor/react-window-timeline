@@ -1,6 +1,7 @@
 import React, {
   CSSProperties,
   forwardRef,
+  ReactElement,
   useCallback,
   useContext,
 } from 'react';
@@ -9,39 +10,50 @@ import mergeRefs from 'react-merge-refs';
 import range from './utils/range';
 import TimelineContext from './context';
 import { getPositionAtTime } from './utils/time';
+import { Item } from './timeline-data';
 
 export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
   function TimelineInner({ children, style, ...props }, ref) {
     const {
+      ColumnRenderer,
       GroupRenderer,
+      RowRenderer,
+      SidebarHeaderRenderer,
+      TimebarHeaderRenderer,
+      TimebarIntervalRenderer,
+      groups,
       intervalDuration,
       intervalWidth,
-      itemHeight,
-      itemRenderer: ItemRenderer,
-      minItemWidth,
-      rowMap,
-      groups,
       intervals,
-      sidebarWidth,
-      startTime,
-      TimebarIntervalRenderer,
-      TimebarHeaderRenderer,
-      SidebarHeaderRenderer,
-      RowRenderer,
-      ColumnRenderer,
-      timebarHeaderHeight,
-      timebarIntervalHeight,
-      timebarHeight,
-      overscanRowStopIndex,
-      overscanRowStartIndex,
+      itemHeight,
+      ItemRenderer,
+      minItemWidth,
       overscanColumnStartIndex,
       overscanColumnStopIndex,
+      overscanRowStartIndex,
+      overscanRowStopIndex,
+      itemMap,
+      rowMap,
+      sidebarWidth,
+      startTime,
+      stickyItemIds,
+      timebarHeaderHeight,
+      timebarHeight,
+      timebarIntervalHeight,
       width,
     } = useContext(TimelineContext);
 
-    const rows = range(overscanRowStopIndex - overscanRowStartIndex + 1).map(
-      rowIndex => rowMap.get(rowIndex + overscanRowStartIndex)!
-    );
+    const stickyItems = stickyItemIds.map(id => itemMap.get(id)!);
+    const stickyRows = stickyItems.map(item => item.row);
+
+    const rows = Array.from(
+      new Set([
+        ...stickyRows,
+        ...range(overscanRowStopIndex - overscanRowStartIndex + 1).map(
+          rowIndex => rowMap.get(rowIndex + overscanRowStartIndex)!
+        ),
+      ])
+    ).sort((a, b) => a.index - b.index);
 
     const columns = range(
       overscanColumnStartIndex,
@@ -160,6 +172,67 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
         />
 
         {rows.flatMap(row => {
+          function renderItem(item: Item): ReactElement {
+            const left = getPositionAtTime(
+              item.start,
+              startTime,
+              intervalDuration,
+              intervalWidth,
+              sidebarWidth
+            );
+
+            const width = Math.max(
+              getPositionAtTime(
+                item.end,
+                startTime,
+                intervalDuration,
+                intervalWidth,
+                sidebarWidth
+              ) - left,
+              minItemWidth
+            );
+
+            const top = row.top + row.getItemTopOffset(item, itemHeight);
+
+            return (
+              <ItemRenderer
+                key={item.id}
+                item={item as any}
+                style={{
+                  position: 'absolute',
+                  boxSizing: 'border-box',
+                  left,
+                  top,
+                  width,
+                  height: itemHeight,
+                  zIndex: 1,
+                }}
+              />
+            );
+          }
+
+          const rowStickyItems = stickyItems.filter(
+            item => item.groupId === row.group.id
+          );
+
+          const isSticky =
+            row.index < overscanRowStartIndex ||
+            row.index > overscanRowStopIndex;
+
+          if (isSticky) {
+            return rowStickyItems.map(item => renderItem(item));
+          }
+
+          const items = Array.from(
+            new Set([
+              ...rowStickyItems,
+              ...row.getItemsByIntervalRange(
+                overscanColumnStartIndex,
+                overscanColumnStopIndex
+              ),
+            ])
+          );
+
           return [
             sidebarWidth > 0 && GroupRenderer && (
               <GroupRenderer
@@ -204,50 +277,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
               />
             ),
 
-            ...row
-              .getItemsByIntervalRange(
-                overscanColumnStartIndex,
-                overscanColumnStopIndex
-              )
-              .map(item => {
-                const left = getPositionAtTime(
-                  item.start,
-                  startTime,
-                  intervalDuration,
-                  intervalWidth,
-                  sidebarWidth
-                );
-
-                const width = Math.max(
-                  getPositionAtTime(
-                    item.end,
-                    startTime,
-                    intervalDuration,
-                    intervalWidth,
-                    sidebarWidth
-                  ) - left,
-                  minItemWidth
-                );
-
-                const top =
-                  row.top + item.row.getItemTopOffset(item, itemHeight);
-
-                return (
-                  <ItemRenderer
-                    key={item.id}
-                    item={item as any}
-                    style={{
-                      position: 'absolute',
-                      boxSizing: 'border-box',
-                      left,
-                      top,
-                      width,
-                      height: itemHeight,
-                      zIndex: 1,
-                    }}
-                  />
-                );
-              }),
+            ...items.map(item => renderItem(item)),
           ];
         })}
       </div>
