@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useRef } from 'react';
+import React, { useCallback, useContext, useMemo, useRef } from 'react';
 
 import '@interactjs/auto-start';
 import '@interactjs/auto-scroll';
@@ -35,6 +35,10 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
   const { setInteraction } = useContext(InteractionContext);
 
   const { groups } = itemData;
+  const group = groups[item.groupId];
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const originalGroup = useMemo(() => group, []);
 
   // Create the interactions
   const setRef = useCallback(
@@ -188,7 +192,7 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
       ref={setRef}
       style={{
         ...style,
-        backgroundColor: groups[item.groupId].color,
+        backgroundColor: originalGroup.color,
         transition: 'all 0.5s',
         boxSizing: 'border-box',
         overflow: 'hidden',

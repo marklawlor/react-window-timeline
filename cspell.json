@@ -12,5 +12,5 @@
     "upsert"
   ],
   "flagWords": [],
-  "ignorePaths": ["cspell.json", "tsconfig.json", "package.json"]
+  "ignorePaths": ["cspell.json", "tsconfig.json", "package.json", ".github"]
 }

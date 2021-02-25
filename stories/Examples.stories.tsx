@@ -8,6 +8,9 @@ import InteractiveExample from '../examples/interactive';
 const meta: Meta = {
   title: 'Timeline',
   component: Timeline,
+  parameters: {
+    layout: 'fullscreen',
+  },
 };
 
 export default meta;
