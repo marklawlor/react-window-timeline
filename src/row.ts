@@ -62,6 +62,10 @@ export default class Row<T extends Item = Item> {
     return previousRow.top + previousRow.height;
   }
 
+  get bottom(): number {
+    return this.height + this.top;
+  }
+
   addItem(item: MappedItem<T>) {
     this.items.push(item);
   }

@@ -1,4 +1,5 @@
 import React, {
+  memo,
   ReactElement,
   useCallback,
   useMemo,
@@ -7,6 +8,7 @@ import React, {
 } from 'react';
 
 import {
+  areEqual,
   GridOnItemsRenderedProps,
   VariableSizeGrid,
   VariableSizeGridProps,
@@ -95,7 +97,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     startDate,
     timebarIntervalHeight = itemHeight,
     timebarHeaderHeight = 0,
-    timebarHeaderRenderer = props => <div {...props} />,
+    timebarHeaderRenderer,
     sidebarHeaderRenderer = props => <div {...props} />,
     width,
     initialScrollLeft = 0,
@@ -127,6 +129,29 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
       snapDuration,
     });
   }, [groups, items, intervals, itemHeight, timebarHeight, snapDuration]);
+
+  const [
+    {
+      overscanColumnStartIndex,
+      overscanColumnStopIndex,
+      overscanRowStartIndex,
+      overscanRowStopIndex,
+      visibleColumnStartIndex,
+      visibleColumnStopIndex,
+      visibleRowStartIndex,
+      visibleRowStopIndex,
+    },
+    setVisibleArea,
+  ] = useState<GridOnItemsRenderedProps>({
+    overscanColumnStartIndex: 0,
+    overscanColumnStopIndex: 0,
+    overscanRowStartIndex: 0,
+    overscanRowStopIndex: 0,
+    visibleColumnStartIndex: 0,
+    visibleColumnStopIndex: 0,
+    visibleRowStartIndex: 0,
+    visibleRowStopIndex: 0,
+  });
 
   const getValuesToUpdate: TimelineContextValue['getValuesToUpdate'] = useCallback(
     (event, action) => {
@@ -227,17 +252,6 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     [itemMap, rowMap]
   );
 
-  const [visibleArea, setVisibleArea] = useState<GridOnItemsRenderedProps>({
-    overscanColumnStartIndex: 0,
-    overscanColumnStopIndex: 0,
-    overscanRowStartIndex: 0,
-    overscanRowStopIndex: 0,
-    visibleColumnStartIndex: 0,
-    visibleColumnStopIndex: 0,
-    visibleRowStartIndex: 0,
-    visibleRowStopIndex: 0,
-  });
-
   const rowCount = groups.length;
   const columnCount = intervals.length;
   const columnWidth = useCallback(
@@ -262,14 +276,54 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         ) - sidebarWidth
       );
 
+  const ColumnRenderer = useMemo(
+    () => (columnRenderer ? memo(columnRenderer, areEqual) : undefined),
+    [columnRenderer]
+  );
+
+  const GroupRenderer = useMemo(
+    () => (groupRenderer ? memo(groupRenderer, areEqual) : undefined),
+    [groupRenderer]
+  );
+
+  const RowRenderer = useMemo(
+    () => (rowRenderer ? memo(rowRenderer, areEqual) : undefined),
+    [rowRenderer]
+  );
+
+  const SidebarHeaderRenderer = useMemo(
+    () => memo(sidebarHeaderRenderer, areEqual),
+    [sidebarHeaderRenderer]
+  );
+
+  const TimebarHeaderRenderer = useMemo(
+    () =>
+      timebarHeaderRenderer ? memo(timebarHeaderRenderer, areEqual) : undefined,
+    [timebarHeaderRenderer]
+  );
+
+  const TimebarIntervalRenderer = useMemo(
+    () =>
+      timebarIntervalRenderer
+        ? memo(timebarIntervalRenderer, areEqual)
+        : undefined,
+    [timebarIntervalRenderer]
+  );
+
   return (
     <TimelineContext.Provider
       value={{
+        ColumnRenderer,
+        GroupRenderer,
+        RowRenderer,
+        SidebarHeaderRenderer,
+        TimebarHeaderRenderer,
+        TimebarIntervalRenderer,
         columnCount,
-        columnRenderer,
         columnWidth,
+        endDate,
+        endTime,
         getValuesToUpdate,
-        groupRenderer,
         groups,
         height,
         intervalDuration,
@@ -280,22 +334,26 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         itemRenderer,
         minItemWidth,
         outerRef,
+        overscanColumnStartIndex,
+        overscanColumnStopIndex,
+        overscanRowStartIndex,
+        overscanRowStopIndex,
         rowCount,
         rowHeight,
         rowMap,
-        rowRenderer,
-        sidebarHeaderRenderer,
         sidebarWidth,
+        snapDuration,
         startDate,
         startTime,
         timebarHeaderHeight,
-        timebarHeaderRenderer,
         timebarHeight,
         timebarIntervalHeight,
-        timebarIntervalRenderer,
-        visibleArea,
-        width,
         updateItem: updateItem as TimelineContextValue['updateItem'],
+        visibleColumnStartIndex,
+        visibleColumnStopIndex,
+        visibleRowStartIndex,
+        visibleRowStopIndex,
+        width,
       }}
     >
       <VariableSizeGrid

@@ -58,10 +58,10 @@
     "@interactjs/types": "1.10.3",
     "@interactjs/utils": "1.10.3",
     "@size-limit/preset-small-lib": "4.9.2",
-    "@storybook/addon-essentials": "6.1.19",
-    "@storybook/addon-links": "6.1.19",
-    "@storybook/addons": "6.1.19",
-    "@storybook/react": "6.1.19",
+    "@storybook/addon-essentials": "6.1.20",
+    "@storybook/addon-links": "6.1.20",
+    "@storybook/addons": "6.1.20",
+    "@storybook/react": "6.1.20",
     "@types/lodash": "^4.14.168",
     "@types/react": "17.0.2",
     "@types/react-dom": "17.0.1",
@@ -79,7 +79,7 @@
     "size-limit": "4.9.2",
     "tsdx": "0.14.1",
     "tslib": "2.1.0",
-    "typescript": "4.1.5",
+    "typescript": "4.2.2",
     "uuid": "8.3.2"
   },
   "dependencies": {

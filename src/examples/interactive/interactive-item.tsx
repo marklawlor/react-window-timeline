@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useRef } from 'react';
+import React, { memo, useCallback, useContext, useRef } from 'react';
 
 import '@interactjs/auto-start';
 import '@interactjs/auto-scroll';
@@ -9,7 +9,12 @@ import interact from '@interactjs/interact';
 
 import { Interactable, Rect } from '@interactjs/types';
 
-import { ItemRenderer, TimelineContext, UpdateItemAction } from '../../../src';
+import {
+  ItemRenderer,
+  TimelineContext,
+  UpdateItemAction,
+  areEqual,
+} from '../../../src';
 import InteractionContext, { Interaction } from './interaction-context';
 
 function getLocale() {
@@ -53,6 +58,13 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
 
         interactable
           .draggable({
+            autoScroll: {
+              container: node.parentElement!.parentElement!,
+              margin: 50,
+              distance: 10,
+              interval: 10,
+              speed: 500,
+            },
             listeners: {
               move(event) {
                 dragPosition.x += event.dx;
@@ -160,4 +172,4 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
   );
 };
 
-export default InteractiveItem;
+export default memo(InteractiveItem, areEqual);

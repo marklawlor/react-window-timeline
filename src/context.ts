@@ -1,5 +1,5 @@
 import { createContext, CSSProperties, FC, RefObject } from 'react';
-import { GridOnItemsRenderedProps, VariableSizeGridProps } from 'react-window';
+import { VariableSizeGridProps } from 'react-window';
 
 import { Group, Item, RowMap } from './timeline-data';
 
@@ -49,45 +49,57 @@ export enum UpdateItemAction {
   RESIZE,
 }
 
+export type GetValuesToUpdate = (
+  event: MouseEvent & { target: HTMLElement },
+  action?: UpdateItemAction
+) => null | {
+  start: number;
+  end: number;
+  groupId?: string;
+};
+
 export interface TimelineContextValue {
+  ColumnRenderer?: ColumnRenderer;
+  GroupRenderer?: GroupRenderer<any>;
+  RowRenderer?: RowRenderer<any>;
+  TimebarHeaderRenderer?: TimebarHeaderRenderer;
+  TimebarIntervalRenderer?: TimebarIntervalRenderer;
   columnCount: number;
   columnWidth: VariableSizeGridProps['columnWidth'];
-  getValuesToUpdate: (
-    event: MouseEvent & { target: HTMLElement },
-    action?: UpdateItemAction
-  ) => null | {
-    start: number;
-    end: number;
-    groupId?: string;
-  };
-  intervals: number[];
+  endDate: Date;
+  endTime: number;
+  getValuesToUpdate: GetValuesToUpdate;
+  groups: Group[];
+  height: number;
   intervalDuration: number;
   intervalWidth: number;
+  intervals: number[];
   itemData: any;
   itemHeight: number;
   itemRenderer: ItemRenderer<any>;
-  groupRenderer: GroupRenderer<any>;
-  timebarIntervalRenderer: TimebarIntervalRenderer;
-  timebarHeaderRenderer: TimebarHeaderRenderer;
   minItemWidth: number;
-  groups: Group[];
+  outerRef: RefObject<HTMLDivElement>;
+  overscanColumnStartIndex: number;
+  overscanColumnStopIndex: number;
+  overscanRowStartIndex: number;
+  overscanRowStopIndex: number;
   rowCount: number;
   rowHeight: VariableSizeGridProps['rowHeight'];
   rowMap: RowMap<Item>;
+  SidebarHeaderRenderer: SidebarHeaderRenderer;
   sidebarWidth: number;
+  snapDuration: number;
   startDate: Date;
   startTime: number;
-  timebarHeight: number;
   timebarHeaderHeight: number;
+  timebarHeight: number;
   timebarIntervalHeight: number;
-  rowRenderer?: RowRenderer<any>;
-  columnRenderer?: ColumnRenderer;
-  sidebarHeaderRenderer: SidebarHeaderRenderer;
   updateItem: UpdateItem;
-  visibleArea: GridOnItemsRenderedProps;
+  visibleColumnStartIndex: number;
+  visibleColumnStopIndex: number;
+  visibleRowStartIndex: number;
+  visibleRowStopIndex: number;
   width: number;
-  height: number;
-  outerRef: RefObject<HTMLDivElement>;
 }
 
 const TimelineContext = createContext<TimelineContextValue>({
@@ -100,10 +112,11 @@ const TimelineContext = createContext<TimelineContextValue>({
   itemData: {},
   itemHeight: 0,
   groups: [],
+  snapDuration: 0,
   itemRenderer: () => null,
-  groupRenderer: () => null,
-  timebarIntervalRenderer: () => null,
-  timebarHeaderRenderer: () => null,
+  GroupRenderer: () => null,
+  TimebarIntervalRenderer: () => null,
+  TimebarHeaderRenderer: () => null,
   minItemWidth: 0,
   rowCount: 0,
   rowHeight: () => 0,
@@ -111,24 +124,24 @@ const TimelineContext = createContext<TimelineContextValue>({
   sidebarWidth: 0,
   startDate: new Date(0),
   startTime: 0,
+  endDate: new Date(0),
+  endTime: 0,
   timebarHeight: 0,
   timebarHeaderHeight: 0,
   timebarIntervalHeight: 0,
   height: 0,
   updateItem: () => undefined,
-  sidebarHeaderRenderer: () => null,
+  SidebarHeaderRenderer: () => null,
   width: 0,
   outerRef: { current: null },
-  visibleArea: {
-    overscanColumnStartIndex: 0,
-    overscanColumnStopIndex: 0,
-    overscanRowStartIndex: 0,
-    overscanRowStopIndex: 0,
-    visibleColumnStartIndex: 0,
-    visibleColumnStopIndex: 0,
-    visibleRowStartIndex: 0,
-    visibleRowStopIndex: 0,
-  },
+  overscanColumnStartIndex: 0,
+  overscanColumnStopIndex: 0,
+  overscanRowStartIndex: 0,
+  overscanRowStopIndex: 0,
+  visibleColumnStartIndex: 0,
+  visibleColumnStopIndex: 0,
+  visibleRowStartIndex: 0,
+  visibleRowStopIndex: 0,
 });
 
 TimelineContext.displayName = 'TimelineContext';

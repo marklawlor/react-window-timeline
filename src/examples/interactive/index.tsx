@@ -19,7 +19,7 @@ export default function InteractiveExample(): ReactElement {
 
   const groups = useMemo(() => randomGroups(100), []);
 
-  const items = useMemo(() => randomItems(groups, 0, 20, startDate, endDate), [
+  const items = useMemo(() => randomItems(groups, 1, 20, startDate, endDate), [
     groups,
     startDate,
     endDate,
