@@ -51,34 +51,39 @@ export interface TimelineProps<
   G extends Group = Group,
   D = any
 > extends Omit<VariableSizeGridProps, VariableSizeGridPropsOmitted> {
-  columnRenderer?: ColumnRenderer;
-  endDate: Date;
-  groupRenderer: GroupRenderer<G>;
+  // Required
+  endTime: number;
   groups: Group[];
+  height: number;
   intervalDuration: number;
-  initialScrollTime?: number;
   intervalWidth: number;
-  itemData?: D;
-  itemHeight?: number;
   itemRenderer: ItemRenderer<I>;
   items: I[];
+  startTime: number;
+  width: number;
+
+  // Optional
+  columnRenderer?: ColumnRenderer;
+  groupRenderer?: GroupRenderer<G>;
+  initialScrollTime?: number;
+  itemData?: D;
+  itemHeight?: number;
   minItemWidth?: number;
   rowRenderer?: RowRenderer<G>;
+  sidebarHeaderRenderer?: SidebarHeaderRenderer;
   sidebarWidth?: number;
   snapDuration?: number;
-  startDate: Date;
   timebarHeaderHeight?: number;
   timebarHeaderRenderer?: TimebarHeaderRenderer;
   timebarIntervalHeight?: number;
-  timebarIntervalRenderer: TimebarIntervalRenderer;
-  sidebarHeaderRenderer?: SidebarHeaderRenderer;
+  timebarIntervalRenderer?: TimebarIntervalRenderer;
 }
 
 export default function Timeline<I extends Item, G extends Group, D = any>(
   props: TimelineProps<I, G, D>
 ): ReactElement {
   const {
-    endDate,
+    endTime: initialEndTime,
     groups,
     height,
     intervalDuration,
@@ -94,7 +99,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     minItemWidth = 5,
     sidebarWidth = 0,
     snapDuration = 1000 * 60, // 1 minute
-    startDate,
+    startTime: initialStartTime,
     timebarIntervalHeight = itemHeight,
     timebarHeaderHeight = 0,
     timebarHeaderRenderer,
@@ -107,8 +112,8 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
 
   const gridRef = useRef<VariableSizeGrid>(null);
   const outerRef = useRef<HTMLDivElement>(null);
-  const startTime = snapTime(startDate.getTime(), snapDuration);
-  const endTime = snapTime(endDate.getTime(), snapDuration);
+  const startTime = snapTime(initialStartTime, snapDuration);
+  const endTime = snapTime(initialEndTime, snapDuration);
   const timebarHeight = timebarIntervalHeight + timebarHeaderHeight;
 
   const intervals = useMemo(() => {
@@ -350,7 +355,6 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         TimebarIntervalRenderer,
         columnCount,
         columnWidth,
-        endDate,
         endTime,
         getValuesToUpdate,
         groups,
@@ -374,7 +378,6 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         setStickyItemIds: handleSetStickyItemIds,
         sidebarWidth,
         snapDuration,
-        startDate,
         startTime,
         stickyItemIds,
         timebarHeaderHeight,

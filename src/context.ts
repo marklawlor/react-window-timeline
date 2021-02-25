@@ -66,7 +66,6 @@ export interface TimelineContextValue {
   TimebarIntervalRenderer?: TimebarIntervalRenderer;
   columnCount: number;
   columnWidth: VariableSizeGridProps['columnWidth'];
-  endDate: Date;
   endTime: number;
   getValuesToUpdate: GetValuesToUpdate;
   groups: Group[];
@@ -92,7 +91,6 @@ export interface TimelineContextValue {
   setStickyItemIds: (items: Array<Item['id']>) => void;
   sidebarWidth: number;
   snapDuration: number;
-  startDate: Date;
   startTime: number;
   timebarHeaderHeight: number;
   timebarHeight: number;
@@ -128,9 +126,7 @@ const TimelineContext = createContext<TimelineContextValue>({
   stickyItemIds: [],
   setStickyItemIds: () => undefined,
   sidebarWidth: 0,
-  startDate: new Date(0),
   startTime: 0,
-  endDate: new Date(0),
   endTime: 0,
   timebarHeight: 0,
   timebarHeaderHeight: 0,

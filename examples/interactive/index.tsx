@@ -13,16 +13,16 @@ import { randomGroups, randomItems } from '../generate-data';
 import { InteractionContextProvider } from './interaction-context';
 
 export default function InteractiveExample(): ReactElement {
-  const startDate = startOfDay(new Date());
-  const endDate = addDays(startOfDay(new Date()), 1);
+  const startTime = startOfDay(new Date()).getTime();
+  const endTime = addDays(startOfDay(new Date()), 1).getTime();
   const intervalDuration = 1000 * 60 * 60; // 1 hour
 
   const groups = useMemo(() => randomGroups(100), []);
 
-  const items = useMemo(() => randomItems(groups, 2, 2, startDate, endDate), [
+  const items = useMemo(() => randomItems(groups, 2, 2, startTime, endTime), [
     groups,
-    startDate,
-    endDate,
+    startTime,
+    endTime,
   ]);
 
   const groupMap = Object.fromEntries(groups.map(group => [group.id, group]));
@@ -31,7 +31,7 @@ export default function InteractiveExample(): ReactElement {
     <InteractionContextProvider>
       <Timeline
         columnRenderer={ColumnRenderer}
-        endDate={endDate}
+        endTime={endTime}
         groupRenderer={GroupRenderer}
         groups={groups}
         height={1000}
@@ -43,8 +43,8 @@ export default function InteractiveExample(): ReactElement {
         items={items}
         rowRenderer={RowRenderer}
         sidebarWidth={100}
-        startDate={startDate}
-        initialScrollTime={addMinutes(startDate, 3 * 60).getTime()}
+        startTime={startTime}
+        initialScrollTime={addMinutes(startTime, 3 * 60).getTime()}
         timebarHeaderHeight={50}
         timebarHeaderRenderer={TimebarHeaderRenderer}
         timebarIntervalHeight={50}

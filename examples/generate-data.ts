@@ -16,12 +16,9 @@ export function randomItems(
   groups: Group[],
   nMin: number,
   nMax: number,
-  startDate: Date,
-  endDate: Date
+  startTime: number,
+  endTime: number
 ): Item[] {
-  const startTime = startDate.getTime();
-  const endTime = endDate.getTime();
-
   return groups.flatMap(group => {
     const n = Math.floor(Math.random() * nMax) + nMin;
     return range(n).map(index => {
