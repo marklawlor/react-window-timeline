@@ -65,10 +65,13 @@ export interface TimelineProps<
   // Optional
   columnRenderer?: ColumnRenderer;
   groupRenderer?: GroupRenderer<G>;
+  groupTopPadding?: number;
+  groupBottomPadding?: number;
   initialScrollTime?: number;
   itemData?: D;
   itemHeight?: number;
   minItemWidth?: number;
+  minGroupHeight?: number;
   rowRenderer?: RowRenderer<G>;
   sidebarHeaderRenderer?: SidebarHeaderRenderer;
   sidebarWidth?: number;
@@ -91,12 +94,15 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     itemData,
     itemHeight = 20,
     itemRenderer,
+    groupBottomPadding = 0,
     groupRenderer,
+    groupTopPadding = 0,
     timebarIntervalRenderer,
     items,
     columnRenderer,
     rowRenderer,
     minItemWidth = 5,
+    minGroupHeight = 0,
     sidebarWidth = 0,
     snapDuration = 1000 * 60, // 1 minute
     startTime: initialStartTime,
@@ -132,8 +138,21 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
       itemHeight,
       timebarHeight,
       snapDuration,
+      minGroupHeight,
+      groupTopPadding,
+      groupBottomPadding,
     });
-  }, [groups, items, intervals, itemHeight, timebarHeight, snapDuration]);
+  }, [
+    groups,
+    items,
+    intervals,
+    itemHeight,
+    timebarHeight,
+    snapDuration,
+    minGroupHeight,
+    groupTopPadding,
+    groupBottomPadding,
+  ]);
 
   const [stickyItemIds, setStickyItemIds] = useState<Array<Item['id']>>([]);
   const handleSetStickyItemIds = useCallback(

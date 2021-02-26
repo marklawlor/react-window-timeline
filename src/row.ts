@@ -8,6 +8,9 @@ export interface RowOptions {
   itemMap: ItemMap;
   rowMap: RowMap<any>;
   timebarHeight: number;
+  minGroupHeight: number;
+  groupTopPadding: number;
+  groupBottomPadding: number;
 }
 
 export default class Row<T extends Item = Item> {
@@ -20,6 +23,9 @@ export default class Row<T extends Item = Item> {
   itemMap: ItemMap;
   rowMap: RowMap<any>;
   timebarHeight: number;
+  minGroupHeight: number;
+  groupTopPadding: number;
+  groupBottomPadding: number;
 
   private offsets: Record<string, number> = {};
 
@@ -33,6 +39,9 @@ export default class Row<T extends Item = Item> {
     itemMap,
     rowMap,
     timebarHeight,
+    minGroupHeight,
+    groupTopPadding,
+    groupBottomPadding,
   }: RowOptions) {
     this.group = group;
     this.index = index;
@@ -41,6 +50,10 @@ export default class Row<T extends Item = Item> {
     this.itemMap = itemMap;
     this.rowMap = rowMap;
     this.timebarHeight = timebarHeight;
+    this.minGroupHeight = minGroupHeight;
+
+    this.groupTopPadding = groupTopPadding;
+    this.groupBottomPadding = groupBottomPadding;
   }
 
   get height(): number {
@@ -101,7 +114,12 @@ export default class Row<T extends Item = Item> {
       rowOffset++;
     }
 
-    this._height = Math.max(rowOffset, 1) * this.itemHeight;
+    const height =
+      this.groupTopPadding +
+      Math.max(rowOffset, 1) * this.itemHeight +
+      this.groupBottomPadding;
+
+    this._height = Math.max(this.minGroupHeight, height);
   }
 
   get items() {
@@ -121,7 +139,7 @@ export default class Row<T extends Item = Item> {
   }
 
   getItemTopOffset(item: T, itemHeight: number): number {
-    return this.offsets[item.id as T['id']] * itemHeight;
+    return this.offsets[item.id as T['id']] * itemHeight + this.groupTopPadding;
   }
 
   getItemsByIntervalRange(startIndex: number, endIndex: number): MappedItem[] {

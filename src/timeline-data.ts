@@ -26,6 +26,9 @@ export interface MapTimelineDateOptions<T extends Item> {
   itemHeight: number;
   timebarHeight: number;
   snapDuration: number;
+  minGroupHeight: number;
+  groupTopPadding: number;
+  groupBottomPadding: number;
 }
 
 export function getTimelineData<T extends Item>({
@@ -35,6 +38,9 @@ export function getTimelineData<T extends Item>({
   items,
   snapDuration,
   timebarHeight,
+  minGroupHeight,
+  groupTopPadding,
+  groupBottomPadding,
 }: MapTimelineDateOptions<T>): [ItemMap<T>, RowMap<T>] {
   const itemMap: ItemMap<T> = new Map();
   const rowMap: RowMap<T> = new Map();
@@ -51,6 +57,9 @@ export function getTimelineData<T extends Item>({
       itemMap,
       rowMap,
       timebarHeight,
+      minGroupHeight,
+      groupTopPadding,
+      groupBottomPadding,
     });
 
     rows.push(row);
