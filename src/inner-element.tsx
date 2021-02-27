@@ -121,7 +121,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                 style={{
                   position: 'absolute',
                   boxSizing: 'border-box',
-                  top: timebarHeaderHeight,
+                  top: 0,
                   left: sidebarWidth + intervalWidth * column,
                   width: intervalWidth,
                   height: rowMap.get(groups.length - 1)!.bottom - timebarHeight,

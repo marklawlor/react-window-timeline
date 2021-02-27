@@ -7,7 +7,7 @@ import '@interactjs/actions/resize';
 import '@interactjs/modifiers';
 import interact from '@interactjs/interact';
 
-import { Interactable, Rect } from '@interactjs/types';
+import { Interactable } from '@interactjs/types';
 
 import { ItemRenderer, TimelineContext, UpdateItemAction } from '../../src';
 import InteractionContext, { Interaction } from './interaction-context';
@@ -23,8 +23,6 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
     itemData,
     upsertItem,
     getValuesToUpdate,
-    sidebarWidth,
-    timebarHeight,
     outerRef,
     setStickyItemIds,
   } = useContext(TimelineContext);
@@ -116,14 +114,14 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
               },
             },
             modifiers: [
-              interact.modifiers.restrict({
-                restriction: 'parent',
-                elementRect: { left: 0, right: 1, top: 0, bottom: 1 },
-                offset: {
-                  left: sidebarWidth,
-                  top: timebarHeight,
-                } as Rect,
-              }),
+              // interact.modifiers.restrict({
+              //   restriction: outerElement,
+              //   elementRect: { left: 0, right: 1, top: 0, bottom: 1 },
+              //   offset: {
+              //     left: sidebarWidth,
+              //     top: 0,
+              //   } as Rect,
+              // }),
             ],
           })
           .resizable({
@@ -170,12 +168,12 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
               },
             },
             modifiers: [
-              interact.modifiers.restrict({
-                restriction: 'parent',
-                offset: {
-                  left: sidebarWidth,
-                } as Rect,
-              }),
+              // interact.modifiers.restrict({
+              //   restriction: 'parent',
+              //   offset: {
+              //     left: sidebarWidth,
+              //   } as Rect,
+              // }),
             ],
           });
 

@@ -51,7 +51,7 @@ export default function InteractiveExample(): ReactElement {
                 sidebarWidth={sidebarWidth}
                 intervalWidth={intervalWidth}
                 timebarIntervalHeight={50}
-                timebarHeaderHeight={50}
+                timebarHeaderHeight={250}
                 itemHeight={20}
                 initialScrollTime={addMinutes(startTime, 3 * 60).getTime()}
                 itemData={{ groups: groupMap }}
