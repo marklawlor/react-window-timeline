@@ -10,7 +10,6 @@ export default function TimebarHeaderRenderer({
       style={{
         ...style,
         backgroundColor: 'white',
-        display: 'inline-flex',
         justifyContent: 'center',
         alignItems: 'center',
         borderBottom: '1px solid grey',

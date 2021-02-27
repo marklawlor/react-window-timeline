@@ -41,7 +41,6 @@ export default function TimebarIntervalRenderer({
     <div
       style={{
         ...style,
-        display: 'inline-flex',
         justifyContent: 'center',
         alignItems: 'center',
         borderRight: '1px solid grey',

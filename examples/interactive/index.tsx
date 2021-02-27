@@ -21,7 +21,7 @@ export default function InteractiveExample(): ReactElement {
 
   const groups = useMemo(() => randomGroups(100), []);
 
-  const items = useMemo(() => randomItems(groups, 0, 50, startTime, endTime), [
+  const items = useMemo(() => randomItems(groups, 1, 50, startTime, endTime), [
     groups,
     startTime,
     endTime,
@@ -30,11 +30,14 @@ export default function InteractiveExample(): ReactElement {
   const groupMap = Object.fromEntries(groups.map(group => [group.id, group]));
 
   return (
-    <div style={{ height: '100vh' }}>
+    <div style={{ height: '100vh', boxSizing: 'border-box' }}>
       <AutoSizer>
         {({ width, height }) => {
           const sidebarWidth = 150;
-          const intervalWidth = (width - sidebarWidth) / 12;
+
+          // Fit 12 intervals, floor to remove rounding errors
+          const intervalWidth = Math.floor((width - sidebarWidth) / 12);
+
           return (
             <InteractionContextProvider>
               <Timeline
@@ -59,7 +62,9 @@ export default function InteractiveExample(): ReactElement {
                 timebarHeaderRenderer={TimebarHeaderRenderer}
                 timebarIntervalRenderer={TimebarIntervalRenderer}
                 sidebarHeaderRenderer={SidebarHeaderRenderer}
-              />
+              >
+                <div id="test" />
+              </Timeline>
             </InteractionContextProvider>
           );
         }}

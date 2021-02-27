@@ -1,13 +1,19 @@
-import { createContext, CSSProperties, FC, RefObject } from 'react';
+import {
+  createContext,
+  CSSProperties,
+  FC,
+  ReactElement,
+  RefObject,
+} from 'react';
 import { VariableSizeGridProps } from 'react-window';
 
 import { Group, Item, ItemMap, RowMap } from './timeline-data';
 
-export interface ItemRenderProps<T extends Item = Item> {
+export interface ItemRendererProps<T extends Item = Item> {
   item: T;
   style: CSSProperties;
 }
-export type ItemRenderer<T extends Item = Item> = FC<ItemRenderProps<T>>;
+export type ItemRenderer<T extends Item = Item> = FC<ItemRendererProps<T>>;
 
 export interface GroupRendererProps<T extends Group = Group> {
   group: T;
@@ -61,9 +67,12 @@ export type GetValuesToUpdate = (
 export interface TimelineContextValue {
   ColumnRenderer?: ColumnRenderer;
   GroupRenderer?: GroupRenderer<any>;
+  ItemRenderer: ItemRenderer<any>;
   RowRenderer?: RowRenderer<any>;
+  SidebarHeaderRenderer: SidebarHeaderRenderer;
   TimebarHeaderRenderer?: TimebarHeaderRenderer;
   TimebarIntervalRenderer?: TimebarIntervalRenderer;
+  children?: ReactElement | null;
   columnCount: number;
   columnWidth: VariableSizeGridProps['columnWidth'];
   endTime: number;
@@ -73,10 +82,9 @@ export interface TimelineContextValue {
   intervalDuration: number;
   intervalWidth: number;
   intervals: number[];
-  itemMap: ItemMap;
   itemData: any;
   itemHeight: number;
-  ItemRenderer: ItemRenderer<any>;
+  itemMap: ItemMap;
   minItemWidth: number;
   outerRef: RefObject<HTMLDivElement>;
   overscanColumnStartIndex: number;
@@ -86,12 +94,11 @@ export interface TimelineContextValue {
   rowCount: number;
   rowHeight: VariableSizeGridProps['rowHeight'];
   rowMap: RowMap<Item>;
-  SidebarHeaderRenderer: SidebarHeaderRenderer;
-  stickyItemIds: Array<Item['id']>;
   setStickyItemIds: (items: Array<Item['id']>) => void;
   sidebarWidth: number;
   snapDuration: number;
   startTime: number;
+  stickyItemIds: Array<Item['id']>;
   timebarHeaderHeight: number;
   timebarHeight: number;
   timebarIntervalHeight: number;

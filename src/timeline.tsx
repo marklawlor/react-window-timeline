@@ -1,4 +1,6 @@
 import React, {
+  CSSProperties,
+  forwardRef,
   memo,
   ReactElement,
   useCallback,
@@ -63,6 +65,7 @@ export interface TimelineProps<
   width: number;
 
   // Optional
+  children?: ReactElement | null;
   columnRenderer?: ColumnRenderer;
   groupRenderer?: GroupRenderer<G>;
   groupTopPadding?: number;
@@ -86,31 +89,34 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
   props: TimelineProps<I, G, D>
 ): ReactElement {
   const {
+    // Required
     endTime: initialEndTime,
     groups,
     height,
     intervalDuration,
     intervalWidth,
+    itemRenderer,
+    items,
+    startTime: initialStartTime,
+    width,
+    // Optional
+    children,
     itemData,
     itemHeight = 20,
-    itemRenderer,
     groupBottomPadding = 0,
     groupRenderer,
     groupTopPadding = 0,
     timebarIntervalRenderer,
-    items,
     columnRenderer,
     rowRenderer,
     minItemWidth = 5,
     minGroupHeight = 0,
     sidebarWidth = 0,
     snapDuration = 1000 * 60, // 1 minute
-    startTime: initialStartTime,
     timebarIntervalHeight = itemHeight,
     timebarHeaderHeight = 0,
     timebarHeaderRenderer,
     sidebarHeaderRenderer = props => <div {...props} />,
-    width,
     initialScrollLeft = 0,
     initialScrollTime,
     ...gridProps
@@ -118,6 +124,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
 
   const gridRef = useRef<VariableSizeGrid>(null);
   const outerRef = useRef<HTMLDivElement>(null);
+
   const startTime = snapTime(initialStartTime, snapDuration);
   const endTime = snapTime(initialEndTime, snapDuration);
   const timebarHeight = timebarIntervalHeight + timebarHeaderHeight;
@@ -308,8 +315,9 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     [intervalWidth, sidebarWidth]
   );
   const rowHeight = useCallback(
-    (rowIndex: number) => rowMap.get(rowIndex)?.height || 0,
-    [rowMap]
+    (rowIndex: number) =>
+      rowMap.get(rowIndex)?.height || minGroupHeight || itemHeight,
+    [rowMap, minGroupHeight, itemHeight]
   );
 
   const initialScrollX = !initialScrollTime
@@ -363,6 +371,26 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     [timebarIntervalRenderer]
   );
 
+  const OuterElementRenderer = useMemo(
+    () =>
+      memo(
+        forwardRef<HTMLDivElement, { style: CSSProperties }>((props, ref) => (
+          <div
+            {...props}
+            ref={ref}
+            style={{
+              ...props.style,
+              display: 'flex',
+              alignContent: 'flex-start',
+              flexWrap: 'wrap',
+            }}
+          />
+        )),
+        areEqual
+      ),
+    []
+  );
+
   return (
     <TimelineContext.Provider
       value={{
@@ -372,6 +400,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         SidebarHeaderRenderer,
         TimebarHeaderRenderer,
         TimebarIntervalRenderer,
+        children,
         columnCount,
         columnWidth,
         endTime,
@@ -418,9 +447,10 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         columnCount={columnCount}
         columnWidth={columnWidth}
         innerElementType={innerElementType}
+        outerElementType={OuterElementRenderer}
         onItemsRendered={setVisibleArea}
         outerRef={outerRef}
-        rowCount={rowCount}
+        rowCount={Math.max(rowCount, 1)}
         rowHeight={rowHeight}
         initialScrollLeft={initialScrollX}
       >
