@@ -460,4 +460,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
   );
 }
 
-const noopRenderer = () => null;
+const noopRenderer = props => {
+  console.log(1111, props);
+  return null;
+};

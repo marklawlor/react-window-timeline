@@ -20,6 +20,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
       TimebarHeaderRenderer,
       TimebarIntervalRenderer,
       children: childrenFromProps,
+      height,
       groups,
       intervalDuration,
       intervalWidth,
@@ -90,8 +91,8 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
             boxSizing: 'border-box',
             height: timebarIntervalHeight,
             top: timebarHeaderHeight,
-            zIndex: 3,
             flexDirection: 'column',
+            zIndex: 3,
           }}
         >
           <SidebarHeaderRenderer
@@ -105,32 +106,13 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
               left: 0,
               height: timebarIntervalHeight,
               width: sidebarWidth,
-              zIndex: 4,
+              zIndex: 1,
               marginLeft: overscanColumnStartIndex * intervalWidth,
               overflow: 'visible',
             }}
           />
 
           {columns.flatMap(column => [
-            ColumnRenderer && groups.length >= 1 && (
-              <ColumnRenderer
-                key={`column:${column}`}
-                isOdd={column % 2 === 1}
-                isEven={column % 2 === 0}
-                time={startTime + intervalDuration * column}
-                style={{
-                  position: 'absolute',
-                  boxSizing: 'border-box',
-                  top: timebarHeaderHeight,
-                  left: sidebarWidth + intervalWidth * column,
-                  width: intervalWidth,
-                  height: rowMap.get(groups.length - 1)!.bottom - timebarHeight,
-                  zIndex: 0,
-                  userSelect: 'none',
-                  pointerEvents: 'none',
-                }}
-              />
-            ),
             TimebarIntervalRenderer && (
               <TimebarIntervalRenderer
                 key={`timebar_interval:${column}`}
@@ -144,12 +126,39 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                   width: intervalWidth,
                   top: timebarHeaderHeight,
                   height: timebarIntervalHeight,
-                  zIndex: 3,
                   verticalAlign: 'top',
                 }}
               />
             ),
           ])}
+        </div>
+
+        <div
+          style={{
+            height: 0,
+            position: 'sticky',
+            top: timebarHeight,
+          }}
+        >
+          {ColumnRenderer &&
+            columns.map(column => (
+              <ColumnRenderer
+                key={`column:${column}`}
+                isOdd={column % 2 === 1}
+                isEven={column % 2 === 0}
+                time={startTime + intervalDuration * column}
+                style={{
+                  position: 'absolute',
+                  boxSizing: 'border-box',
+                  top: 0,
+                  left: sidebarWidth + intervalWidth * column,
+                  width: intervalWidth,
+                  height: height,
+                  userSelect: 'none',
+                  pointerEvents: 'none',
+                }}
+              />
+            ))}
         </div>
 
         <div
@@ -175,6 +184,14 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
           />
 
           {rows.flatMap(row => {
+            const rowStickyItems = stickyItems.filter(
+              item => item.groupId === row.group.id
+            );
+
+            const isStickyRow =
+              row.index < overscanRowStartIndex ||
+              row.index > overscanRowStopIndex;
+
             function renderItem(item: Item): ReactElement {
               const left = getPositionAtTime(
                 item.start,
@@ -197,6 +214,10 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
 
               const top = row.top + row.getItemTopOffset(item, itemHeight);
 
+              const isStickyItem = rowStickyItems.some(
+                ({ id }) => id === item.id
+              );
+
               return (
                 <ItemRenderer
                   key={item.id}
@@ -208,21 +229,13 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                     top,
                     width,
                     height: itemHeight,
-                    zIndex: 1,
+                    zIndex: isStickyItem ? 1 : 0,
                   }}
                 />
               );
             }
 
-            const rowStickyItems = stickyItems.filter(
-              item => item.groupId === row.group.id
-            );
-
-            const isSticky =
-              row.index < overscanRowStartIndex ||
-              row.index > overscanRowStopIndex;
-
-            if (isSticky) {
+            if (isStickyRow) {
               return rowStickyItems.map(item => renderItem(item));
             }
 
@@ -237,6 +250,25 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
             );
 
             return [
+              RowRenderer && (
+                <RowRenderer
+                  key={`row:${row.index}`}
+                  rowIndex={row.index}
+                  group={row.group}
+                  isOdd={row.index % 2 === 1}
+                  isEven={row.index % 2 === 0}
+                  style={{
+                    position: 'absolute',
+                    boxSizing: 'border-box',
+                    top: row.top,
+                    left: 0,
+                    height: row.height,
+                    width: intervals.length * intervalWidth + sidebarWidth,
+                    zIndex: -1,
+                  }}
+                />
+              ),
+              ...items.map(item => renderItem(item)),
               sidebarWidth > 0 && GroupRenderer && (
                 <GroupRenderer
                   key={`group:${row.index}`}
@@ -252,7 +284,6 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                     width: sidebarWidth,
                     height: row.height,
                     left: 0,
-                    zIndex: 2,
                   }}
                 />
               ),
@@ -260,27 +291,6 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
               sidebarWidth > 0 && GroupRenderer && (
                 <div key={`group:${row.index}:line-break`} />
               ),
-
-              RowRenderer && (
-                <RowRenderer
-                  key={`row:${row.index}`}
-                  rowIndex={row.index}
-                  group={row.group}
-                  isOdd={row.index % 2 === 1}
-                  isEven={row.index % 2 === 0}
-                  style={{
-                    position: 'absolute',
-                    boxSizing: 'border-box',
-                    top: row.top,
-                    left: 0,
-                    height: row.height,
-                    width: intervals.length * intervalWidth + sidebarWidth,
-                    zIndex: 0,
-                  }}
-                />
-              ),
-
-              ...items.map(item => renderItem(item)),
             ];
           })}
 
