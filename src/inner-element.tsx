@@ -121,7 +121,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                 style={{
                   position: 'absolute',
                   boxSizing: 'border-box',
-                  top: 0,
+                  top: timebarHeaderHeight,
                   left: sidebarWidth + intervalWidth * column,
                   width: intervalWidth,
                   height: rowMap.get(groups.length - 1)!.bottom - timebarHeight,
@@ -157,14 +157,13 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
           style={{
             ...style,
             whiteSpace: 'nowrap',
-            display: 'inline-block',
+            flex: '1 0 auto',
           }}
           {...props}
         >
           <div
             key="row:margin"
             style={{
-              position: 'sticky',
               boxSizing: 'border-box',
               display: 'block',
               marginTop:
