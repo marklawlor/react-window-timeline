@@ -55,7 +55,7 @@
     }
   ],
   "devDependencies": {
-    "@babel/core": "^7.13.1",
+    "@babel/core": "^7.13.8",
     "@interactjs/actions": "1.10.3",
     "@interactjs/auto-scroll": "1.10.3",
     "@interactjs/auto-start": "1.10.3",
