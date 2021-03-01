@@ -89,8 +89,8 @@ export interface TimelineProps<
   timebarIntervalRenderer?: TimebarIntervalRenderer;
 }
 
-export default function Timeline<I extends Item, G extends Group, D = any>(
-  props: TimelineProps<I, G, D>
+export default function Timeline<TItem extends Item, G extends Group, D = any>(
+  props: TimelineProps<TItem, G, D>
 ): ReactElement {
   const {
     // Required
@@ -283,8 +283,40 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     ]
   );
 
+  const upsertItem = useCallback<UpsertItem<TItem>>(
+    item => {
+      const row = Array.from(rowMap.values()).find(
+        ({ group }) => group.id === item.groupId
+      );
+
+      if (!row) {
+        throw new Error(`Unable to find group with id ${item.groupId}`);
+      }
+
+      const previous = itemMap.get(item.id);
+      if (previous && item.groupId !== previous.groupId) {
+        previous.row.removeItem(item);
+      }
+
+      row.addItem(item);
+      itemMap.set(
+        item.id,
+        Object.assign(item, {
+          end: snapTime(item.end, snapDuration),
+          groupId: row.group.id,
+          row,
+          start: snapTime(item.start, snapDuration),
+        })
+      );
+      gridRef.current?.resetAfterRowIndex(
+        Math.min(row.index, previous?.row.index || row.index)
+      );
+    },
+    [itemMap, rowMap, snapDuration]
+  );
+
   const createItemAtCursor: TimelineContextValue['createItemAtCursor'] = useCallback(
-    (event, { id, duration, defaultGroupId }) => {
+    (event, { id, duration, defaultGroupId, ...rest }) => {
       if (!event.currentTarget) {
         return null;
       }
@@ -320,60 +352,33 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         )
       );
 
-      const item: Item = {
+      const item = {
         id,
         start,
         end: snapTime(start + duration, snapDuration),
         groupId: row?.group.id || defaultGroupId || '',
-      };
+        ...rest,
+      } as TItem;
 
       if (!item.groupId) {
         throw new Error('No group id provided');
       }
 
+      upsertItem(item);
+
       return item;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
+      sidebarWidth,
+      timebarHeight,
       rowMap,
       startTime,
       intervalDuration,
       intervalWidth,
-      sidebarWidth,
       snapDuration,
-      timebarHeight,
+      upsertItem,
     ]
-  );
-
-  const upsertItem = useCallback<UpsertItem<I>>(
-    item => {
-      const row = Array.from(rowMap.values()).find(
-        ({ group }) => group.id === item.groupId
-      );
-
-      if (!row) {
-        throw new Error(`Unable to find group with id ${item.groupId}`);
-      }
-
-      const previous = itemMap.get(item.id);
-      if (previous && item.groupId !== previous.groupId) {
-        previous.row.removeItem(item);
-      }
-
-      row.addItem(item);
-      itemMap.set(
-        item.id,
-        Object.assign(item, {
-          end: snapTime(item.end, snapDuration),
-          groupId: row.group.id,
-          row,
-          start: snapTime(item.start, snapDuration),
-        })
-      );
-      gridRef.current?.resetAfterRowIndex(
-        Math.min(row.index, previous?.row.index || row.index)
-      );
-    },
-    [itemMap, rowMap, snapDuration]
   );
 
   const rowCount = groups.length;
