@@ -2,6 +2,8 @@ import React, {
   createContext,
   CSSProperties,
   FC,
+  ForwardedRef,
+  ForwardRefRenderFunction,
   ReactElement,
   RefObject,
 } from 'react';
@@ -9,9 +11,14 @@ import { VariableSizeGridProps } from 'react-window';
 
 import { Group, Item, ItemMap, RowMap } from './timeline-data';
 
-export type BodyRenderer = FC<BodyRendererProps>;
+export type BodyRenderer = ForwardRefRenderFunction<
+  HTMLElement,
+  BodyRendererProps
+>;
+
 export interface BodyRendererProps {
   style: CSSProperties;
+  ref: ForwardedRef<HTMLElement>;
 }
 
 export type ItemRenderer<T extends Item = Item> = FC<ItemRendererProps<T>>;
@@ -83,7 +90,7 @@ export type GetItemAtMouse = (
 };
 
 export interface TimelineContextValue {
-  BodyRenderer?: BodyRenderer;
+  BodyRenderer: BodyRenderer;
   ColumnRenderer?: ColumnRenderer;
   GroupRenderer?: GroupRenderer<any>;
   ItemRenderer: ItemRenderer<any>;

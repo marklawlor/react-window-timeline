@@ -9,9 +9,10 @@ import TimelineContext from './context';
 import { getPositionAtTime } from './utils/time';
 import { Item } from './timeline-data';
 
-export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
+export default forwardRef<HTMLElement, { style: CSSProperties }>(
   function TimelineInner({ style }, ref) {
     const {
+      BodyRenderer,
       ColumnRenderer,
       GroupRenderer,
       ItemRenderer,
@@ -114,7 +115,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
           </div>
         )}
 
-        <div
+        <BodyRenderer
           ref={ref}
           style={{
             whiteSpace: 'nowrap',
@@ -188,7 +189,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
               ])
             ).map(item => renderItem(item));
           })}
-        </div>
+        </BodyRenderer>
 
         <SidebarRenderer
           style={{

@@ -28,6 +28,7 @@ import TimelineContext, {
   ColumnRenderer,
   SidebarHeaderRenderer,
   SidebarRenderer,
+  BodyRenderer,
 } from './context';
 
 import innerElementType from './inner-element';
@@ -66,6 +67,7 @@ export interface TimelineProps<
   width: number;
 
   // Optional
+  bodyRenderer?: BodyRenderer;
   children?: ReactElement | null;
   columnRenderer?: ColumnRenderer;
   groupRenderer?: GroupRenderer<G>;
@@ -102,6 +104,9 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     startTime: initialStartTime,
     width,
     // Optional
+    bodyRenderer = forwardRef<HTMLDivElement>((props, ref) => (
+      <div ref={ref} {...props} />
+    )),
     children,
     itemData,
     itemHeight = 20,
@@ -399,6 +404,8 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         ) - sidebarWidth
       );
 
+  const BodyRenderer = useMemo(() => memo(bodyRenderer), [bodyRenderer]);
+
   const ColumnRenderer = useMemo(
     () => (columnRenderer ? memo(columnRenderer, areEqual) : undefined),
     [columnRenderer]
@@ -464,6 +471,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
   return (
     <TimelineContext.Provider
       value={{
+        BodyRenderer,
         ColumnRenderer,
         GroupRenderer,
         RowRenderer,
