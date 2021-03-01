@@ -47,6 +47,10 @@ export interface SidebarHeaderRendererProps {
   style: CSSProperties;
 }
 export type SidebarHeaderRenderer = FC<SidebarHeaderRendererProps>;
+export interface SidebarRendererProps {
+  style: CSSProperties;
+}
+export type SidebarRenderer = FC<SidebarHeaderRendererProps>;
 
 export type UpsertItem<T extends Item = Item> = (item: T) => void;
 
@@ -70,6 +74,7 @@ export interface TimelineContextValue {
   ItemRenderer: ItemRenderer<any>;
   RowRenderer?: RowRenderer<any>;
   SidebarHeaderRenderer: SidebarHeaderRenderer;
+  SidebarRenderer: SidebarRenderer;
   TimebarHeaderRenderer?: TimebarHeaderRenderer;
   TimebarIntervalRenderer?: TimebarIntervalRenderer;
   children?: ReactElement | null;
@@ -111,46 +116,47 @@ export interface TimelineContextValue {
 }
 
 const TimelineContext = createContext<TimelineContextValue>({
+  GroupRenderer: () => null,
+  ItemRenderer: () => null,
+  SidebarHeaderRenderer: () => null,
+  SidebarRenderer: () => null,
+  TimebarHeaderRenderer: () => null,
+  TimebarIntervalRenderer: () => null,
   columnCount: 0,
   columnWidth: () => 0,
+  endTime: 0,
   getValuesToUpdate: () => null,
-  intervals: [],
+  groups: [],
+  height: 0,
   intervalDuration: 0,
   intervalWidth: 0,
-  itemMap: new Map(),
+  intervals: [],
   itemData: {},
   itemHeight: 0,
-  groups: [],
-  snapDuration: 0,
-  ItemRenderer: () => null,
-  GroupRenderer: () => null,
-  TimebarIntervalRenderer: () => null,
-  TimebarHeaderRenderer: () => null,
+  itemMap: new Map(),
   minItemWidth: 0,
-  rowCount: 0,
-  rowHeight: () => 0,
-  rowMap: new Map(),
-  stickyItemIds: [],
-  setStickyItemIds: () => undefined,
-  sidebarWidth: 0,
-  startTime: 0,
-  endTime: 0,
-  timebarHeight: 0,
-  timebarHeaderHeight: 0,
-  timebarIntervalHeight: 0,
-  height: 0,
-  upsertItem: () => undefined,
-  SidebarHeaderRenderer: () => null,
-  width: 0,
   outerRef: { current: null },
   overscanColumnStartIndex: 0,
   overscanColumnStopIndex: 0,
   overscanRowStartIndex: 0,
   overscanRowStopIndex: 0,
+  rowCount: 0,
+  rowHeight: () => 0,
+  rowMap: new Map(),
+  setStickyItemIds: () => undefined,
+  sidebarWidth: 0,
+  snapDuration: 0,
+  startTime: 0,
+  stickyItemIds: [],
+  timebarHeaderHeight: 0,
+  timebarHeight: 0,
+  timebarIntervalHeight: 0,
+  upsertItem: () => undefined,
   visibleColumnStartIndex: 0,
   visibleColumnStopIndex: 0,
   visibleRowStartIndex: 0,
   visibleRowStopIndex: 0,
+  width: 0,
 });
 
 TimelineContext.displayName = 'TimelineContext';

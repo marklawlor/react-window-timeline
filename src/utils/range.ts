@@ -13,13 +13,13 @@ export default function range(
     step = 1;
   }
 
-  if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
+  if ((step > 0 && start > stop) || (step < 0 && start < stop)) {
     return [];
   }
 
   var result = [];
 
-  for (var i = start; step > 0 ? i < stop : i > stop; i += step) {
+  for (var i = start; step > 0 ? i <= stop : i >= stop; i += step) {
     result.push(i);
   }
 

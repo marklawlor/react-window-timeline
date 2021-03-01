@@ -27,6 +27,7 @@ import TimelineContext, {
   RowRenderer,
   ColumnRenderer,
   SidebarHeaderRenderer,
+  SidebarRenderer,
 } from './context';
 
 import innerElementType from './inner-element';
@@ -77,6 +78,7 @@ export interface TimelineProps<
   minGroupHeight?: number;
   rowRenderer?: RowRenderer<G>;
   sidebarHeaderRenderer?: SidebarHeaderRenderer;
+  sidebarRenderer?: SidebarRenderer;
   sidebarWidth?: number;
   snapDuration?: number;
   timebarHeaderHeight?: number;
@@ -117,6 +119,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     timebarHeaderHeight = 0,
     timebarHeaderRenderer,
     sidebarHeaderRenderer = props => <div {...props} />,
+    sidebarRenderer = props => <div {...props} />,
     initialScrollLeft = 0,
     initialScrollTime,
     ...gridProps
@@ -357,6 +360,10 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     [sidebarHeaderRenderer]
   );
 
+  const SidebarRenderer = useMemo(() => memo(sidebarRenderer, areEqual), [
+    sidebarRenderer,
+  ]);
+
   const TimebarHeaderRenderer = useMemo(
     () =>
       timebarHeaderRenderer ? memo(timebarHeaderRenderer, areEqual) : undefined,
@@ -380,15 +387,15 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
             ref={ref}
             style={{
               ...props.style,
-              display: 'flex',
-              alignContent: 'flex-start',
-              flexWrap: 'wrap',
+              display: 'grid',
+              gridTemplateRows: `${timebarHeaderHeight}px ${timebarIntervalHeight}px 1fr`,
+              gridTemplateColumns: `${sidebarWidth}px 1fr`,
             }}
           />
         )),
         areEqual
       ),
-    []
+    [sidebarWidth, timebarHeaderHeight, timebarIntervalHeight]
   );
 
   return (
@@ -398,6 +405,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         GroupRenderer,
         RowRenderer,
         SidebarHeaderRenderer,
+        SidebarRenderer,
         TimebarHeaderRenderer,
         TimebarIntervalRenderer,
         children,

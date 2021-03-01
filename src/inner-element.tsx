@@ -10,21 +10,19 @@ import { getPositionAtTime } from './utils/time';
 import { Item } from './timeline-data';
 
 export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
-  function TimelineInner({ children, style, ...props }, ref) {
+  function TimelineInner({ style }, ref) {
     const {
       ColumnRenderer,
       GroupRenderer,
       ItemRenderer,
       RowRenderer,
       SidebarHeaderRenderer,
+      SidebarRenderer,
       TimebarHeaderRenderer,
       TimebarIntervalRenderer,
       children: childrenFromProps,
-      height,
-      groups,
       intervalDuration,
       intervalWidth,
-      intervals,
       itemHeight,
       itemMap,
       minItemWidth,
@@ -36,112 +34,37 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
       sidebarWidth,
       startTime,
       stickyItemIds,
-      timebarHeaderHeight,
       timebarHeight,
+      timebarHeaderHeight,
       timebarIntervalHeight,
     } = useContext(TimelineContext);
 
     const stickyItems = stickyItemIds.map(id => itemMap.get(id)!);
     const stickyRows = stickyItems.map(item => item.row);
 
-    const rangeCount =
-      groups.length > 0 ? overscanRowStopIndex - overscanRowStartIndex + 1 : 0;
-
-    const rows = Array.from(
-      new Set([
-        ...stickyRows,
-        ...range(rangeCount).map(
-          rowIndex => rowMap.get(rowIndex + overscanRowStartIndex)!
-        ),
-      ])
-    ).sort((a, b) => a.index - b.index);
-
-    const columns = range(
-      overscanColumnStartIndex,
-      overscanColumnStopIndex + 1
+    const visibleRows = range(overscanRowStartIndex, overscanRowStopIndex).map(
+      rowIndex => rowMap.get(rowIndex)!
     );
+
+    const rows = Array.from(new Set([...stickyRows, ...visibleRows])).sort(
+      (a, b) => a.index - b.index
+    );
+
+    const columns = range(overscanColumnStartIndex, overscanColumnStopIndex);
 
     return (
       <>
-        {timebarHeaderHeight > 0 && TimebarHeaderRenderer && (
-          <TimebarHeaderRenderer
-            key="timebar:head"
+        {childrenFromProps}
+
+        {ColumnRenderer && (
+          <div
             style={{
+              gridArea: '3 / 1 / 4 / 3',
               position: 'sticky',
-              flexGrow: 1,
-              flexShrink: 1,
-              flexBasis: 'auto',
-              top: 0,
-              left: 0,
-              display: 'inline-flex',
-              height: timebarHeaderHeight,
-              boxSizing: 'border-box',
-              zIndex: 3,
+              top: timebarHeight,
             }}
-          />
-        )}
-
-        <div
-          style={{
-            flexGrow: 1,
-            flexShrink: 0,
-            flexBasis: '100%',
-            whiteSpace: 'nowrap',
-            position: 'sticky',
-            boxSizing: 'border-box',
-            height: timebarIntervalHeight,
-            top: timebarHeaderHeight,
-            flexDirection: 'column',
-            zIndex: 3,
-          }}
-        >
-          <SidebarHeaderRenderer
-            key="sidebar:header"
-            style={{
-              position: 'sticky',
-              display: 'inline-block',
-              verticalAlign: 'bottom',
-              boxSizing: 'border-box',
-              top: timebarHeaderHeight,
-              left: 0,
-              height: timebarIntervalHeight,
-              width: sidebarWidth,
-              zIndex: 1,
-              marginLeft: overscanColumnStartIndex * intervalWidth,
-              overflow: 'visible',
-            }}
-          />
-
-          {columns.flatMap(column => [
-            TimebarIntervalRenderer && (
-              <TimebarIntervalRenderer
-                key={`timebar_interval:${column}`}
-                isOdd={column % 2 === 1}
-                isEven={column % 2 === 0}
-                time={startTime + intervalDuration * column}
-                style={{
-                  position: 'sticky',
-                  display: 'inline-flex',
-                  boxSizing: 'border-box',
-                  width: intervalWidth,
-                  top: timebarHeaderHeight,
-                  height: timebarIntervalHeight,
-                  verticalAlign: 'top',
-                }}
-              />
-            ),
-          ])}
-        </div>
-
-        <div
-          style={{
-            height: 0,
-            position: 'sticky',
-            top: timebarHeight,
-          }}
-        >
-          {ColumnRenderer &&
-            columns.map(column => (
+          >
+            {columns.map(column => (
               <ColumnRenderer
                 key={`column:${column}`}
                 isOdd={column % 2 === 1}
@@ -151,36 +74,54 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                   position: 'absolute',
                   boxSizing: 'border-box',
                   top: 0,
-                  left: sidebarWidth + intervalWidth * column,
+                  left: intervalWidth * column + sidebarWidth,
                   width: intervalWidth,
-                  height: height,
+                  bottom: 0,
                   userSelect: 'none',
                   pointerEvents: 'none',
                 }}
               />
             ))}
-        </div>
+          </div>
+        )}
+
+        {RowRenderer && (
+          <div
+            style={{
+              gridArea: '1 / 1 / 4 / 2',
+              position: 'sticky',
+              left: 0,
+              marginTop: visibleRows[0]?.top || 0,
+            }}
+          >
+            {visibleRows.flatMap(row => (
+              <RowRenderer
+                key={`row:${row.index}`}
+                rowIndex={row.index}
+                group={row.group}
+                isOdd={row.index % 2 === 1}
+                isEven={row.index % 2 === 0}
+                style={{
+                  position: 'sticky',
+                  display: 'block',
+                  boxSizing: 'border-box',
+                  height: row.height,
+                  left: 0,
+                }}
+              />
+            ))}
+          </div>
+        )}
 
         <div
           ref={ref}
-          {...props}
           style={{
-            ...style,
             whiteSpace: 'nowrap',
-            flex: '1 0 auto',
+            gridArea: '1 / 1 / 3 / 3',
+            position: 'relative',
+            ...style,
           }}
         >
-          <div
-            key="row:margin"
-            style={{
-              boxSizing: 'border-box',
-              marginTop:
-                (rowMap.get(overscanRowStartIndex)?.top ?? timebarHeight) -
-                timebarHeight,
-              pointerEvents: 'none',
-            }}
-          />
-
           {rows.flatMap(row => {
             const rowStickyItems = stickyItems.filter(
               item => item.groupId === row.group.id
@@ -248,26 +189,20 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
               ])
             );
 
+            return [...items.map(item => renderItem(item))];
+          })}
+        </div>
+
+        <SidebarRenderer
+          style={{
+            gridArea: '1 / 1 / 4 / 2',
+            position: 'sticky',
+            left: 0,
+            marginTop: visibleRows[0]?.top || 0,
+          }}
+        >
+          {visibleRows.flatMap(row => {
             return [
-              RowRenderer && (
-                <RowRenderer
-                  key={`row:${row.index}`}
-                  rowIndex={row.index}
-                  group={row.group}
-                  isOdd={row.index % 2 === 1}
-                  isEven={row.index % 2 === 0}
-                  style={{
-                    position: 'absolute',
-                    boxSizing: 'border-box',
-                    top: row.top,
-                    left: 0,
-                    height: row.height,
-                    width: intervals.length * intervalWidth + sidebarWidth,
-                    zIndex: -1,
-                  }}
-                />
-              ),
-              ...items.map(item => renderItem(item)),
               sidebarWidth > 0 && GroupRenderer && (
                 <GroupRenderer
                   key={`group:${row.index}`}
@@ -278,7 +213,6 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                   style={{
                     position: 'sticky',
                     display: 'block',
-                    verticalAlign: 'bottom',
                     boxSizing: 'border-box',
                     width: sidebarWidth,
                     height: row.height,
@@ -288,9 +222,63 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
               ),
             ];
           })}
+        </SidebarRenderer>
 
-          {childrenFromProps}
+        <div
+          style={{
+            whiteSpace: 'nowrap',
+            position: 'sticky',
+            boxSizing: 'border-box',
+            top: timebarHeaderHeight,
+            gridArea: '2 / 1 / 3 / 3',
+            overflow: 'visible',
+            marginLeft: columns[0] * intervalWidth + sidebarWidth,
+          }}
+        >
+          {columns.flatMap(column => [
+            TimebarIntervalRenderer && (
+              <TimebarIntervalRenderer
+                key={`timebar_interval:${column}`}
+                isOdd={column % 2 === 1}
+                isEven={column % 2 === 0}
+                time={startTime + intervalDuration * column}
+                style={{
+                  position: 'sticky',
+                  display: 'inline-flex',
+                  boxSizing: 'border-box',
+                  width: intervalWidth,
+                  top: timebarHeaderHeight,
+                  height: timebarIntervalHeight,
+                  verticalAlign: 'top',
+                }}
+              />
+            ),
+          ])}
         </div>
+
+        <SidebarHeaderRenderer
+          key="sidebar:header"
+          style={{
+            position: 'sticky',
+            boxSizing: 'border-box',
+            top: timebarHeaderHeight,
+            left: 0,
+            gridArea: '2 / 1 / 3 / 2',
+          }}
+        />
+
+        {timebarHeaderHeight > 0 && TimebarHeaderRenderer && (
+          <TimebarHeaderRenderer
+            key="timebar:head"
+            style={{
+              position: 'sticky',
+              top: 0,
+              left: 0,
+              zIndex: 3,
+              gridArea: '1 / 1 / 2 / 3',
+            }}
+          />
+        )}
       </>
     );
   }

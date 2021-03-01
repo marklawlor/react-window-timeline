@@ -13,6 +13,7 @@ import ColumnRenderer from '../common/column-renderer';
 import { randomGroups, randomItems } from '../generate-data';
 import { InteractionContextProvider } from './interaction-context';
 import SidebarHeaderRenderer from '../common/sidebar-header-renderer';
+import SidebarRenderer from '../common/sidebar-renderer';
 
 export default function InteractiveExample(): ReactElement {
   const startTime = startOfDay(new Date()).getTime();
@@ -65,6 +66,7 @@ export default function InteractiveExample(): ReactElement {
                 timebarHeaderRenderer={TimebarHeaderRenderer}
                 timebarIntervalRenderer={TimebarIntervalRenderer}
                 sidebarHeaderRenderer={SidebarHeaderRenderer}
+                sidebarRenderer={SidebarRenderer}
               >
                 <div id="test" />
               </Timeline>

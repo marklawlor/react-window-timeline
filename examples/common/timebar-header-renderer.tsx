@@ -9,6 +9,7 @@ export default function TimebarHeaderRenderer({
     <div
       style={{
         ...style,
+        display: 'flex',
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
