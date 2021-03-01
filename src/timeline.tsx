@@ -1,7 +1,6 @@
 import React, {
   CSSProperties,
   forwardRef,
-  memo,
   ReactElement,
   useCallback,
   useMemo,
@@ -10,7 +9,6 @@ import React, {
 } from 'react';
 
 import {
-  areEqual,
   GridOnItemsRenderedProps,
   VariableSizeGrid,
   VariableSizeGridProps,
@@ -106,7 +104,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
     // Optional
     bodyRenderer = forwardRef<HTMLDivElement>((props, ref) => (
       <div ref={ref} {...props} />
-    )),
+    )) as BodyRenderer,
     children,
     itemData,
     itemHeight = 20,
@@ -402,67 +400,30 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
         ) - sidebarWidth
       );
 
-  const BodyRenderer = useMemo(() => memo(bodyRenderer), [bodyRenderer]);
-
-  const ColumnRenderer = useMemo(
-    () => (columnRenderer ? memo(columnRenderer, areEqual) : undefined),
-    [columnRenderer]
-  );
-
-  const GroupRenderer = useMemo(
-    () => (groupRenderer ? memo(groupRenderer, areEqual) : undefined),
-    [groupRenderer]
-  );
-
-  const ItemRenderer = useMemo(() => memo(itemRenderer, areEqual), [
-    itemRenderer,
-  ]);
-
-  const RowRenderer = useMemo(
-    () => (rowRenderer ? memo(rowRenderer, areEqual) : undefined),
-    [rowRenderer]
-  );
-
-  const SidebarHeaderRenderer = useMemo(
-    () => memo(sidebarHeaderRenderer, areEqual),
-    [sidebarHeaderRenderer]
-  );
-
-  const SidebarRenderer = useMemo(() => memo(sidebarRenderer, areEqual), [
-    sidebarRenderer,
-  ]);
-
-  const TimebarHeaderRenderer = useMemo(
-    () =>
-      timebarHeaderRenderer ? memo(timebarHeaderRenderer, areEqual) : undefined,
-    [timebarHeaderRenderer]
-  );
-
-  const TimebarIntervalRenderer = useMemo(
-    () =>
-      timebarIntervalRenderer
-        ? memo(timebarIntervalRenderer, areEqual)
-        : undefined,
-    [timebarIntervalRenderer]
-  );
+  const BodyRenderer = bodyRenderer;
+  const ColumnRenderer = columnRenderer;
+  const GroupRenderer = groupRenderer;
+  const ItemRenderer = itemRenderer;
+  const RowRenderer = rowRenderer;
+  const SidebarHeaderRenderer = sidebarHeaderRenderer;
+  const SidebarRenderer = sidebarRenderer;
+  const TimebarHeaderRenderer = timebarHeaderRenderer;
+  const TimebarIntervalRenderer = timebarIntervalRenderer;
 
   const OuterElementRenderer = useMemo(
     () =>
-      memo(
-        forwardRef<HTMLDivElement, { style: CSSProperties }>((props, ref) => (
-          <div
-            {...props}
-            ref={ref}
-            style={{
-              ...props.style,
-              display: 'grid',
-              gridTemplateRows: `${timebarHeaderHeight}px ${timebarIntervalHeight}px 1fr`,
-              gridTemplateColumns: `${sidebarWidth}px calc(100% - ${sidebarWidth}px) 1fr`,
-            }}
-          />
-        )),
-        areEqual
-      ),
+      forwardRef<HTMLDivElement, { style: CSSProperties }>((props, ref) => (
+        <div
+          {...props}
+          ref={ref}
+          style={{
+            ...props.style,
+            display: 'grid',
+            gridTemplateRows: `${timebarHeaderHeight}px ${timebarIntervalHeight}px 1fr`,
+            gridTemplateColumns: `${sidebarWidth}px calc(100% - ${sidebarWidth}px) 1fr`,
+          }}
+        />
+      )),
     [sidebarWidth, timebarHeaderHeight, timebarIntervalHeight]
   );
 
