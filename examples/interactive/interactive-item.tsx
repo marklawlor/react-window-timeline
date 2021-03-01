@@ -22,7 +22,7 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
   const {
     itemData,
     upsertItem,
-    getValuesToUpdate,
+    getItemFromAction,
     outerRef,
     setStickyItemIds,
   } = useContext(TimelineContext);
@@ -90,7 +90,7 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
                 node.style.transition = '';
                 node.style.transform = `translate(${translateX}px, ${translateY}px)`;
 
-                const updatedValues = getValuesToUpdate(
+                const updatedValues = getItemFromAction(
                   event,
                   UpdateItemAction.MOVE
                 ) as Interaction;
@@ -100,7 +100,7 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
               end(event) {
                 upsertItem({
                   ...item,
-                  ...getValuesToUpdate(event, UpdateItemAction.MOVE),
+                  ...getItemFromAction(event, UpdateItemAction.MOVE),
                 });
 
                 node.style.top = event.clientY;
@@ -159,7 +159,7 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
               end(event) {
                 upsertItem({
                   ...item,
-                  ...getValuesToUpdate(event, UpdateItemAction.RESIZE),
+                  ...getItemFromAction(event, UpdateItemAction.RESIZE),
                 });
 
                 // Reset

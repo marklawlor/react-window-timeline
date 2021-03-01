@@ -205,15 +205,13 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     visibleRowStopIndex: 0,
   });
 
-  (window as any).a = () => setStickyItemIds(['0:1']);
-
-  const getValuesToUpdate: TimelineContextValue['getValuesToUpdate'] = useCallback(
+  const getItemFromAction: TimelineContextValue['getItemFromAction'] = useCallback(
     (event, action) => {
-      if (!event.target) {
+      if (!event.currentTarget) {
         return null;
       }
 
-      const targetBox = event.target.getBoundingClientRect();
+      const targetBox = event.currentTarget.getBoundingClientRect();
       const outerElement = outerRef.current?.getBoundingClientRect() || {
         left: 0,
         right: 0,
@@ -224,8 +222,11 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
       const scrollLeft = outerRef.current?.scrollLeft || 0;
       const scrollTop = outerRef.current?.scrollTop || 0;
 
-      const left = targetBox.left + scrollLeft - outerElement.left;
-      const right = targetBox.right + scrollLeft - outerElement.left;
+      const left =
+        targetBox.left + scrollLeft - outerElement.left - sidebarWidth;
+      const right =
+        targetBox.right + scrollLeft - outerElement.left - sidebarWidth;
+      const top = targetBox.top + scrollTop - outerElement.top - timebarHeight;
 
       const updatedValues: Partial<Item> = {
         start: Math.max(
@@ -235,7 +236,6 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
             startTime,
             intervalDuration,
             intervalWidth,
-            sidebarWidth,
             snapDuration
           )
         ),
@@ -246,15 +246,12 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
             startTime,
             intervalDuration,
             intervalWidth,
-            sidebarWidth,
             snapDuration
           )
         ),
       };
 
       if (action !== UpdateItemAction.RESIZE) {
-        const top = event.clientY + scrollTop - outerElement.top;
-
         const row = Array.from(rowMap.values()).find(row => {
           return row.top <= top && row.top + row.height >= top;
         });
@@ -276,6 +273,76 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
       intervalWidth,
       sidebarWidth,
       snapDuration,
+      timebarHeight,
+    ]
+  );
+
+  const getItemAtMouse: TimelineContextValue['getItemAtMouse'] = useCallback(
+    event => {
+      if (!event.currentTarget) {
+        return null;
+      }
+
+      const outerElement = outerRef.current?.getBoundingClientRect() || {
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+      };
+
+      var mouseLeft = event.clientX - outerElement.left; //x position within the element.
+      var mouseTop = event.clientY - outerElement.top; //y position within the element.
+
+      const scrollLeft = outerRef.current?.scrollLeft || 0;
+      const scrollTop = outerRef.current?.scrollTop || 0;
+
+      const left = mouseLeft + scrollLeft - outerElement.left - sidebarWidth;
+      const right = mouseLeft + scrollLeft - outerElement.left - sidebarWidth;
+      const top = mouseTop + scrollTop - outerElement.top - timebarHeight;
+
+      const row = Array.from(rowMap.values()).find(row => {
+        return row.top <= top && row.top + row.height >= top;
+      });
+
+      if (!row) {
+        return null;
+      }
+
+      const updatedValues: Partial<Item> = {
+        start: Math.max(
+          startTime,
+          getTimeAtPosition(
+            left,
+            startTime,
+            intervalDuration,
+            intervalWidth,
+            snapDuration
+          )
+        ),
+        end: Math.min(
+          endTime,
+          getTimeAtPosition(
+            right,
+            startTime,
+            intervalDuration,
+            intervalWidth,
+            snapDuration
+          )
+        ),
+        groupId: row.group.id,
+      };
+
+      return updatedValues as any;
+    },
+    [
+      rowMap,
+      startTime,
+      endTime,
+      intervalDuration,
+      intervalWidth,
+      sidebarWidth,
+      snapDuration,
+      timebarHeight,
     ]
   );
 
@@ -313,10 +380,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
 
   const rowCount = groups.length;
   const columnCount = intervals.length;
-  const columnWidth = useCallback(
-    index => (index === 0 ? intervalWidth + sidebarWidth : intervalWidth),
-    [intervalWidth, sidebarWidth]
-  );
+  const columnWidth = useCallback(() => intervalWidth, [intervalWidth]);
   const rowHeight = useCallback(
     (rowIndex: number) =>
       rowMap.get(rowIndex)?.height || minGroupHeight || itemHeight,
@@ -331,8 +395,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
           initialScrollTime,
           startTime,
           intervalDuration,
-          intervalWidth,
-          sidebarWidth
+          intervalWidth
         ) - sidebarWidth
       );
 
@@ -389,7 +452,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
               ...props.style,
               display: 'grid',
               gridTemplateRows: `${timebarHeaderHeight}px ${timebarIntervalHeight}px 1fr`,
-              gridTemplateColumns: `${sidebarWidth}px 1fr`,
+              gridTemplateColumns: `${sidebarWidth}px calc(100% - ${sidebarWidth}px) 1fr`,
             }}
           />
         )),
@@ -412,8 +475,9 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         columnCount,
         columnWidth,
         endTime,
-        getValuesToUpdate,
+        getItemFromAction,
         groups,
+        getItemAtMouse,
         height,
         intervalDuration,
         intervalWidth,

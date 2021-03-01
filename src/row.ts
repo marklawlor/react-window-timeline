@@ -68,7 +68,7 @@ export default class Row<T extends Item = Item> {
     const previousRow = this.rowMap.get(this.index - 1)!;
 
     if (!previousRow) {
-      return this.timebarHeight;
+      return 0; //this.timebarHeight;
     }
 
     return previousRow.top + previousRow.height;

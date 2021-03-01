@@ -1,4 +1,4 @@
-import {
+import React, {
   createContext,
   CSSProperties,
   FC,
@@ -9,12 +9,18 @@ import { VariableSizeGridProps } from 'react-window';
 
 import { Group, Item, ItemMap, RowMap } from './timeline-data';
 
+export type BodyRenderer = FC<BodyRendererProps>;
+export interface BodyRendererProps {
+  style: CSSProperties;
+}
+
+export type ItemRenderer<T extends Item = Item> = FC<ItemRendererProps<T>>;
 export interface ItemRendererProps<T extends Item = Item> {
   item: T;
   style: CSSProperties;
 }
-export type ItemRenderer<T extends Item = Item> = FC<ItemRendererProps<T>>;
 
+export type GroupRenderer<T extends Group = Group> = FC<GroupRendererProps<T>>;
 export interface GroupRendererProps<T extends Group = Group> {
   group: T;
   rowIndex: number;
@@ -22,36 +28,35 @@ export interface GroupRendererProps<T extends Group = Group> {
   isEven: boolean;
   style: CSSProperties;
 }
-export type GroupRenderer<T extends Group = Group> = FC<GroupRendererProps<T>>;
 
+export type TimebarIntervalRenderer = FC<TimebarIntervalRendererProps>;
 export interface TimebarIntervalRendererProps {
   time: number;
   isOdd: boolean;
   isEven: boolean;
   style: CSSProperties;
 }
-export type TimebarIntervalRenderer = FC<TimebarIntervalRendererProps>;
 
-export type RowRendererProps<T extends Group = Group> = GroupRendererProps<T>;
 export type RowRenderer<T extends Group = Group> = FC<GroupRendererProps<T>>;
+export type RowRendererProps<T extends Group = Group> = GroupRendererProps<T>;
 
-export type ColumnRendererProps = TimebarIntervalRendererProps;
 export type ColumnRenderer = TimebarIntervalRenderer;
+export type ColumnRendererProps = TimebarIntervalRendererProps;
 
+export type TimebarHeaderRenderer = FC<TimebarHeaderProps>;
 export interface TimebarHeaderProps {
   style: CSSProperties;
 }
-export type TimebarHeaderRenderer = FC<TimebarHeaderProps>;
 
+export type SidebarHeaderRenderer = FC<SidebarHeaderRendererProps>;
 export interface SidebarHeaderRendererProps {
   style: CSSProperties;
 }
-export type SidebarHeaderRenderer = FC<SidebarHeaderRendererProps>;
 
+export type SidebarRenderer = FC<SidebarRendererProps>;
 export interface SidebarRendererProps {
   style: CSSProperties;
 }
-export type SidebarRenderer = FC<SidebarRendererProps>;
 
 export type UpsertItem<T extends Item = Item> = (item: T) => void;
 
@@ -60,8 +65,8 @@ export enum UpdateItemAction {
   RESIZE,
 }
 
-export type GetValuesToUpdate = (
-  event: MouseEvent & { target: HTMLElement },
+export type GetItemFromAction = (
+  event: React.MouseEvent<HTMLElement, MouseEvent>,
   action?: UpdateItemAction
 ) => null | {
   start: number;
@@ -69,7 +74,16 @@ export type GetValuesToUpdate = (
   groupId?: string;
 };
 
+export type GetItemAtMouse = (
+  event: React.MouseEvent<HTMLElement, MouseEvent>
+) => null | {
+  start: number;
+  end: number;
+  groupId?: string;
+};
+
 export interface TimelineContextValue {
+  BodyRenderer?: BodyRenderer;
   ColumnRenderer?: ColumnRenderer;
   GroupRenderer?: GroupRenderer<any>;
   ItemRenderer: ItemRenderer<any>;
@@ -82,7 +96,8 @@ export interface TimelineContextValue {
   columnCount: number;
   columnWidth: VariableSizeGridProps['columnWidth'];
   endTime: number;
-  getValuesToUpdate: GetValuesToUpdate;
+  getItemFromAction: GetItemFromAction;
+  getItemAtMouse: GetItemAtMouse;
   groups: Group[];
   height: number;
   intervalDuration: number;
@@ -119,6 +134,7 @@ export interface TimelineContextValue {
 const TimelineContext = createContext<TimelineContextValue>({
   GroupRenderer: () => null,
   ItemRenderer: () => null,
+  BodyRenderer: () => null,
   SidebarHeaderRenderer: () => null,
   SidebarRenderer: () => null,
   TimebarHeaderRenderer: () => null,
@@ -126,7 +142,8 @@ const TimelineContext = createContext<TimelineContextValue>({
   columnCount: 0,
   columnWidth: () => 0,
   endTime: 0,
-  getValuesToUpdate: () => null,
+  getItemFromAction: () => null,
+  getItemAtMouse: () => null,
   groups: [],
   height: 0,
   intervalDuration: 0,

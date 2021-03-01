@@ -88,10 +88,11 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
         {RowRenderer && (
           <div
             style={{
-              gridArea: '1 / 1 / 4 / 2',
+              gridArea: '3 / 2 / 4 / 4',
               position: 'sticky',
               left: 0,
               marginTop: visibleRows[0]?.top || 0,
+              minWidth: style.width,
             }}
           >
             {visibleRows.flatMap(row => (
@@ -117,12 +118,12 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
           ref={ref}
           style={{
             whiteSpace: 'nowrap',
-            gridArea: '1 / 1 / 3 / 3',
+            gridArea: '3 / 2 / 3 / 4',
             position: 'relative',
             ...style,
           }}
         >
-          {rows.flatMap(row => {
+          {rows.map(row => {
             const rowStickyItems = stickyItems.filter(
               item => item.groupId === row.group.id
             );
@@ -136,8 +137,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                 item.start,
                 startTime,
                 intervalDuration,
-                intervalWidth,
-                sidebarWidth
+                intervalWidth
               );
 
               const width = Math.max(
@@ -145,8 +145,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                   item.end,
                   startTime,
                   intervalDuration,
-                  intervalWidth,
-                  sidebarWidth
+                  intervalWidth
                 ) - left,
                 minItemWidth
               );
@@ -179,7 +178,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
               return rowStickyItems.map(item => renderItem(item));
             }
 
-            const items = Array.from(
+            return Array.from(
               new Set([
                 ...rowStickyItems,
                 ...row.getItemsByIntervalRange(
@@ -187,9 +186,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                   overscanColumnStopIndex
                 ),
               ])
-            );
-
-            return [...items.map(item => renderItem(item))];
+            ).map(item => renderItem(item));
           })}
         </div>
 
@@ -199,7 +196,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
             position: 'sticky',
             left: 0,
             minHeight: style.height,
-            paddingTop: visibleRows[0]?.top || 0,
+            paddingTop: (visibleRows[0]?.top || 0) + timebarHeight,
             boxSizing: 'border-box',
           }}
         >

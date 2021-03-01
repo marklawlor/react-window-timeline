@@ -6,6 +6,12 @@ This library provides the core virtualization engine needed for your timeline, t
 
 For an example on how to setup drag&drop, resizing and auto-scrolling please see the example folder.
 
+> This library is under active development, its API is currently unstable.
+
+## Examples
+
+https://marklawlor.github.io/react-window-timeline/
+
 ## Usage
 
 ```jsx
