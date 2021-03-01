@@ -81,7 +81,7 @@ export type GetItemFromAction = (
   groupId?: string;
 };
 
-export type GetItemAtMouse = (
+export type GetItemAtCursor = (
   event: React.MouseEvent<HTMLElement, MouseEvent>
 ) => null | {
   start: number;
@@ -104,7 +104,7 @@ export interface TimelineContextValue {
   columnWidth: VariableSizeGridProps['columnWidth'];
   endTime: number;
   getItemFromAction: GetItemFromAction;
-  getItemAtMouse: GetItemAtMouse;
+  getItemAtCursor: GetItemAtCursor;
   groups: Group[];
   height: number;
   intervalDuration: number;
@@ -150,7 +150,7 @@ const TimelineContext = createContext<TimelineContextValue>({
   columnWidth: () => 0,
   endTime: 0,
   getItemFromAction: () => null,
-  getItemAtMouse: () => null,
+  getItemAtCursor: () => null,
   groups: [],
   height: 0,
   intervalDuration: 0,

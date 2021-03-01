@@ -121,7 +121,8 @@ export default forwardRef<HTMLElement, { style: CSSProperties }>(
             whiteSpace: 'nowrap',
             gridArea: '3 / 2 / 3 / 4',
             position: 'relative',
-            ...style,
+            minHeight: style.height,
+            minWidth: style.width,
           }}
         >
           {rows.map(row => {

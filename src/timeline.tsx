@@ -282,7 +282,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     ]
   );
 
-  const getItemAtMouse: TimelineContextValue['getItemAtMouse'] = useCallback(
+  const getItemAtCursor: TimelineContextValue['getItemAtCursor'] = useCallback(
     event => {
       if (!event.currentTarget) {
         return null;
@@ -295,8 +295,8 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         bottom: 0,
       };
 
-      var mouseLeft = event.clientX - outerElement.left; //x position within the element.
-      var mouseTop = event.clientY - outerElement.top; //y position within the element.
+      var mouseLeft = event.clientX;
+      var mouseTop = event.clientY;
 
       const scrollLeft = outerRef.current?.scrollLeft || 0;
       const scrollTop = outerRef.current?.scrollTop || 0;
@@ -309,11 +309,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         return row.top <= top && row.top + row.height >= top;
       });
 
-      if (!row) {
-        return null;
-      }
-
-      const updatedValues: Partial<Item> = {
+      const updatedValues: ReturnType<TimelineContextValue['getItemAtCursor']> = {
         start: Math.max(
           startTime,
           getTimeAtPosition(
@@ -334,10 +330,13 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
             snapDuration
           )
         ),
-        groupId: row.group.id,
       };
 
-      return updatedValues as any;
+      if (row) {
+        updatedValues.groupId = row.group.id;
+      }
+
+      return updatedValues;
     },
     [
       rowMap,
@@ -485,7 +484,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         endTime,
         getItemFromAction,
         groups,
-        getItemAtMouse,
+        getItemAtCursor,
         height,
         intervalDuration,
         intervalWidth,
