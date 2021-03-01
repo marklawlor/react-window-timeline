@@ -22,7 +22,7 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
   const {
     itemData,
     upsertItem,
-    getItemFromAction,
+    getUpdatedItem,
     outerRef,
     setStickyItemIds,
   } = useContext(TimelineContext);
@@ -90,18 +90,26 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
                 node.style.transition = '';
                 node.style.transform = `translate(${translateX}px, ${translateY}px)`;
 
-                const updatedValues = getItemFromAction(
+                const updatedValues = getUpdatedItem(
                   event,
+                  item,
                   UpdateItemAction.MOVE
                 ) as Interaction;
 
                 setInteraction(updatedValues);
               },
               end(event) {
-                upsertItem({
-                  ...item,
-                  ...getItemFromAction(event, UpdateItemAction.MOVE),
-                });
+                const updatedItem = getUpdatedItem(
+                  event,
+                  item,
+                  UpdateItemAction.MOVE
+                );
+
+                if (!updatedItem) {
+                  throw new Error('Failed to move item');
+                }
+
+                upsertItem(updatedItem);
 
                 node.style.top = event.clientY;
                 node.style.left = event.clientX;
@@ -157,10 +165,17 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
                 });
               },
               end(event) {
-                upsertItem({
-                  ...item,
-                  ...getItemFromAction(event, UpdateItemAction.RESIZE),
-                });
+                const updatedItem = getUpdatedItem(
+                  event,
+                  item,
+                  UpdateItemAction.RESIZE
+                );
+
+                if (!updatedItem) {
+                  throw new Error('Failed to move item');
+                }
+
+                upsertItem(updatedItem);
 
                 // Reset
                 node.style.transform = '';

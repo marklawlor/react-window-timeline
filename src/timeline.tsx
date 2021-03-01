@@ -210,8 +210,8 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     visibleRowStopIndex: 0,
   });
 
-  const getItemFromAction: TimelineContextValue['getItemFromAction'] = useCallback(
-    (event, action) => {
+  const getUpdatedItem: TimelineContextValue['getUpdatedItem'] = useCallback(
+    (event, item, action) => {
       if (!event.currentTarget) {
         return null;
       }
@@ -233,7 +233,8 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         targetBox.right + scrollLeft - outerElement.left - sidebarWidth;
       const top = targetBox.top + scrollTop - outerElement.top - timebarHeight;
 
-      const updatedValues: Partial<Item> = {
+      const updatedValues: Item = {
+        ...item,
         start: Math.max(
           startTime,
           getTimeAtPosition(
@@ -268,7 +269,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         updatedValues.groupId = row.group.id;
       }
 
-      return updatedValues as any;
+      return updatedValues;
     },
     [
       rowMap,
@@ -282,8 +283,8 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
     ]
   );
 
-  const getItemAtCursor: TimelineContextValue['getItemAtCursor'] = useCallback(
-    event => {
+  const createItemAtCursor: TimelineContextValue['createItemAtCursor'] = useCallback(
+    (event, { id, duration, defaultGroupId }) => {
       if (!event.currentTarget) {
         return null;
       }
@@ -302,46 +303,39 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
       const scrollTop = outerRef.current?.scrollTop || 0;
 
       const left = mouseLeft + scrollLeft - outerElement.left - sidebarWidth;
-      const right = mouseLeft + scrollLeft - outerElement.left - sidebarWidth;
       const top = mouseTop + scrollTop - outerElement.top - timebarHeight;
 
       const row = Array.from(rowMap.values()).find(row => {
         return row.top <= top && row.top + row.height >= top;
       });
 
-      const updatedValues: ReturnType<TimelineContextValue['getItemAtCursor']> = {
-        start: Math.max(
+      const start = Math.max(
+        startTime,
+        getTimeAtPosition(
+          left,
           startTime,
-          getTimeAtPosition(
-            left,
-            startTime,
-            intervalDuration,
-            intervalWidth,
-            snapDuration
-          )
-        ),
-        end: Math.min(
-          endTime,
-          getTimeAtPosition(
-            right,
-            startTime,
-            intervalDuration,
-            intervalWidth,
-            snapDuration
-          )
-        ),
+          intervalDuration,
+          intervalWidth,
+          snapDuration
+        )
+      );
+
+      const item: Item = {
+        id,
+        start,
+        end: snapTime(start + duration, snapDuration),
+        groupId: row?.group.id || defaultGroupId || '',
       };
 
-      if (row) {
-        updatedValues.groupId = row.group.id;
+      if (!item.groupId) {
+        throw new Error('No group id provided');
       }
 
-      return updatedValues;
+      return item;
     },
     [
       rowMap,
       startTime,
-      endTime,
       intervalDuration,
       intervalWidth,
       sidebarWidth,
@@ -482,9 +476,9 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         columnCount,
         columnWidth,
         endTime,
-        getItemFromAction,
+        getUpdatedItem,
         groups,
-        getItemAtCursor,
+        createItemAtCursor,
         height,
         intervalDuration,
         intervalWidth,

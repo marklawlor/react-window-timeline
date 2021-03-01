@@ -72,17 +72,19 @@ export enum UpdateItemAction {
   RESIZE,
 }
 
-export type GetItemFromAction = (
+export type GetUpdatedItem = (
   event: React.MouseEvent<HTMLElement, MouseEvent>,
+  item: Item,
   action?: UpdateItemAction
-) => null | {
-  start: number;
-  end: number;
-  groupId?: string;
-};
+) => null | Item;
 
-export type GetItemAtCursor = (
-  event: React.MouseEvent<HTMLElement, MouseEvent>
+export type CreateItemAtCursor = (
+  event: React.MouseEvent<HTMLElement, MouseEvent>,
+  defaultValues: Partial<Item> & {
+    id: Item['id'];
+    duration: number;
+    defaultGroupId?: Group['id'];
+  }
 ) => null | {
   start: number;
   end: number;
@@ -103,8 +105,8 @@ export interface TimelineContextValue {
   columnCount: number;
   columnWidth: VariableSizeGridProps['columnWidth'];
   endTime: number;
-  getItemFromAction: GetItemFromAction;
-  getItemAtCursor: GetItemAtCursor;
+  getUpdatedItem: GetUpdatedItem;
+  createItemAtCursor: CreateItemAtCursor;
   groups: Group[];
   height: number;
   intervalDuration: number;
@@ -149,8 +151,8 @@ const TimelineContext = createContext<TimelineContextValue>({
   columnCount: 0,
   columnWidth: () => 0,
   endTime: 0,
-  getItemFromAction: () => null,
-  getItemAtCursor: () => null,
+  getUpdatedItem: () => null,
+  createItemAtCursor: () => null,
   groups: [],
   height: 0,
   intervalDuration: 0,
