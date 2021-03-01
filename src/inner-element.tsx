@@ -198,7 +198,9 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
             gridArea: '1 / 1 / 4 / 2',
             position: 'sticky',
             left: 0,
-            marginTop: visibleRows[0]?.top || 0,
+            height: style.height,
+            paddingTop: visibleRows[0]?.top || 0,
+            boxSizing: 'border-box',
           }}
         >
           {visibleRows.flatMap(row => {

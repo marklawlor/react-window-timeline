@@ -47,10 +47,11 @@ export interface SidebarHeaderRendererProps {
   style: CSSProperties;
 }
 export type SidebarHeaderRenderer = FC<SidebarHeaderRendererProps>;
+
 export interface SidebarRendererProps {
   style: CSSProperties;
 }
-export type SidebarRenderer = FC<SidebarHeaderRendererProps>;
+export type SidebarRenderer = FC<SidebarRendererProps>;
 
 export type UpsertItem<T extends Item = Item> = (item: T) => void;
 
