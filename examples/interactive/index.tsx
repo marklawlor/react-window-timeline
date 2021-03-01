@@ -14,6 +14,7 @@ import { randomGroups, randomItems } from '../generate-data';
 import { InteractionContextProvider } from './interaction-context';
 import SidebarHeaderRenderer from '../common/sidebar-header-renderer';
 import SidebarRenderer from '../common/sidebar-renderer';
+import BodyRenderer from '../common/body-renderer';
 
 export default function InteractiveExample(): ReactElement {
   const startTime = startOfDay(new Date()).getTime();
@@ -51,22 +52,23 @@ export default function InteractiveExample(): ReactElement {
                 items={items}
                 groups={groups}
                 intervalDuration={intervalDuration}
-                sidebarWidth={sidebarWidth}
-                intervalWidth={intervalWidth}
-                timebarIntervalHeight={50}
-                timebarHeaderHeight={250}
-                itemHeight={20}
-                estimatedRowHeight={500}
-                initialScrollTime={addMinutes(startTime, 3 * 60).getTime()}
-                itemData={{ groups: groupMap }}
-                itemRenderer={InteractiveItemRenderer}
+                bodyRenderer={BodyRenderer}
                 columnRenderer={ColumnRenderer}
+                estimatedRowHeight={500}
                 groupRenderer={GroupRenderer}
+                initialScrollTime={addMinutes(startTime, 3 * 60).getTime()}
+                intervalWidth={intervalWidth}
+                itemData={{ groups: groupMap }}
+                itemHeight={20}
+                itemRenderer={InteractiveItemRenderer}
                 rowRenderer={RowRenderer}
-                timebarHeaderRenderer={TimebarHeaderRenderer}
-                timebarIntervalRenderer={TimebarIntervalRenderer}
                 sidebarHeaderRenderer={SidebarHeaderRenderer}
                 sidebarRenderer={SidebarRenderer}
+                sidebarWidth={sidebarWidth}
+                timebarHeaderHeight={250}
+                timebarHeaderRenderer={TimebarHeaderRenderer}
+                timebarIntervalHeight={50}
+                timebarIntervalRenderer={TimebarIntervalRenderer}
               >
                 <div id="test" />
               </Timeline>

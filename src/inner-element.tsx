@@ -9,7 +9,7 @@ import TimelineContext from './context';
 import { getPositionAtTime } from './utils/time';
 import { Item } from './timeline-data';
 
-export default forwardRef<HTMLElement, { style: CSSProperties }>(
+export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
   function TimelineInner({ style }, ref) {
     const {
       BodyRenderer,
@@ -170,6 +170,7 @@ export default forwardRef<HTMLElement, { style: CSSProperties }>(
                     width,
                     height: itemHeight,
                     zIndex: isStickyItem ? 1 : 0,
+                    userSelect: 'none',
                   }}
                 />
               );
@@ -218,6 +219,7 @@ export default forwardRef<HTMLElement, { style: CSSProperties }>(
                     width: sidebarWidth,
                     height: row.height,
                     left: 0,
+                    userSelect: 'none',
                   }}
                 />
               ),
@@ -251,6 +253,7 @@ export default forwardRef<HTMLElement, { style: CSSProperties }>(
                   top: timebarHeaderHeight,
                   height: timebarIntervalHeight,
                   verticalAlign: 'top',
+                  userSelect: 'none',
                 }}
               />
             ),

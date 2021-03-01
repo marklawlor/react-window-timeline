@@ -18,7 +18,7 @@ export type BodyRenderer = ForwardRefRenderFunction<
 
 export interface BodyRendererProps {
   style: CSSProperties;
-  ref: ForwardedRef<HTMLElement>;
+  ref: ForwardedRef<HTMLDivElement>;
 }
 
 export type ItemRenderer<T extends Item = Item> = FC<ItemRendererProps<T>>;
