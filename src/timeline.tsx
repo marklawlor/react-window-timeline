@@ -446,6 +446,7 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
         height={height}
         columnCount={columnCount}
         columnWidth={columnWidth}
+        estimatedColumnWidth={intervalWidth}
         innerElementType={innerElementType}
         outerElementType={OuterElementRenderer}
         onItemsRendered={setVisibleArea}
@@ -460,7 +461,4 @@ export default function Timeline<I extends Item, G extends Group, D = any>(
   );
 }
 
-const noopRenderer = props => {
-  console.log(1111, props);
-  return null;
-};
+const noopRenderer = () => null;

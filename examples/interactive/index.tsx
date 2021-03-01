@@ -30,7 +30,9 @@ export default function InteractiveExample(): ReactElement {
   const groupMap = Object.fromEntries(groups.map(group => [group.id, group]));
 
   return (
-    <div style={{ height: '100vh', boxSizing: 'border-box' }}>
+    <div
+      style={{ height: '100vh', boxSizing: 'border-box', overflow: 'hidden' }}
+    >
       <AutoSizer>
         {({ width, height }) => {
           const sidebarWidth = 150;
@@ -53,6 +55,7 @@ export default function InteractiveExample(): ReactElement {
                 timebarIntervalHeight={50}
                 timebarHeaderHeight={250}
                 itemHeight={20}
+                estimatedRowHeight={500}
                 initialScrollTime={addMinutes(startTime, 3 * 60).getTime()}
                 itemData={{ groups: groupMap }}
                 itemRenderer={InteractiveItemRenderer}

@@ -163,22 +163,20 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
 
         <div
           ref={ref}
+          {...props}
           style={{
             ...style,
             whiteSpace: 'nowrap',
             flex: '1 0 auto',
           }}
-          {...props}
         >
           <div
             key="row:margin"
             style={{
               boxSizing: 'border-box',
-              display: 'block',
               marginTop:
                 (rowMap.get(overscanRowStartIndex)?.top ?? timebarHeight) -
                 timebarHeight,
-              verticalAlign: 'bottom',
               pointerEvents: 'none',
             }}
           />
@@ -235,6 +233,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
               );
             }
 
+            // Only render the items if this is a sticky row
             if (isStickyRow) {
               return rowStickyItems.map(item => renderItem(item));
             }
@@ -286,10 +285,6 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                     left: 0,
                   }}
                 />
-              ),
-
-              sidebarWidth > 0 && GroupRenderer && (
-                <div key={`group:${row.index}:line-break`} />
               ),
             ];
           })}
