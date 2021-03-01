@@ -198,7 +198,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
             gridArea: '1 / 1 / 4 / 2',
             position: 'sticky',
             left: 0,
-            height: style.height,
+            minHeight: style.height,
             paddingTop: visibleRows[0]?.top || 0,
             boxSizing: 'border-box',
           }}
