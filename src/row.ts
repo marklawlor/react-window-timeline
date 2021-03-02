@@ -65,6 +65,10 @@ export default class Row<T extends Item = Item> {
   }
 
   get top(): number {
+    if (this._height === undefined) {
+      this.recalculate();
+    }
+
     const previousRow = this.rowMap.get(this.index - 1)!;
 
     if (!previousRow) {

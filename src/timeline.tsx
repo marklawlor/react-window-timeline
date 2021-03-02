@@ -3,7 +3,6 @@ import React, {
   forwardRef,
   ReactElement,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -145,7 +144,8 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
   }, [startTime, endTime, intervalDuration]);
 
   const [itemMap, rowMap] = useMemo(() => {
-    const newData = getTimelineData({
+    gridRef.current?.resetAfterRowIndex(0, false);
+    return getTimelineData({
       groups,
       items,
       intervals,
@@ -156,13 +156,6 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
       groupTopPadding,
       groupBottomPadding,
     });
-
-    gridRef.current?.resetAfterIndices({
-      columnIndex: 0,
-      rowIndex: 0,
-    });
-
-    return newData;
   }, [
     groups,
     items,
@@ -174,13 +167,6 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
     groupTopPadding,
     groupBottomPadding,
   ]);
-
-  useEffect(() => {
-    gridRef.current?.resetAfterIndices({
-      columnIndex: 0,
-      rowIndex: 0,
-    });
-  }, [width, height]);
 
   const [stickyItemIds, setStickyItemIds] = useState<Array<Item['id']>>([]);
   const handleSetStickyItemIds = useCallback(
@@ -398,8 +384,9 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
   const columnCount = intervals.length;
   const columnWidth = useCallback(() => intervalWidth, [intervalWidth]);
   const rowHeight = useCallback(
-    (rowIndex: number) =>
-      rowMap.get(rowIndex)?.height || minGroupHeight || itemHeight,
+    (rowIndex: number) => {
+      return rowMap.get(rowIndex)?.height || minGroupHeight || itemHeight;
+    },
     [rowMap, minGroupHeight, itemHeight]
   );
 

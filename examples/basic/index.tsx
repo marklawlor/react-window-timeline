@@ -1,6 +1,7 @@
 import React, { ReactElement, useState } from 'react';
 
 import Timeline from '../../src';
+import BodyRenderer from '../common/body-renderer';
 
 import { randomGroups, randomItems } from '../generate-data';
 
@@ -28,6 +29,7 @@ export default function InteractiveExample(): ReactElement {
         items={items}
         groups={groups}
         sidebarWidth={100}
+        bodyRenderer={BodyRenderer}
         itemRenderer={({ style }) => (
           <div style={{ ...style, background: 'red' }} />
         )}
