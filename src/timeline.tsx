@@ -410,22 +410,21 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
   const TimebarHeaderRenderer = timebarHeaderRenderer;
   const TimebarIntervalRenderer = timebarIntervalRenderer;
 
-  const OuterElementRenderer = useMemo(
-    () =>
-      forwardRef<HTMLDivElement, { style: CSSProperties }>((props, ref) => (
-        <div
-          {...props}
-          ref={ref}
-          style={{
-            ...props.style,
-            display: 'grid',
-            gridTemplateRows: `${timebarHeaderHeight}px ${timebarIntervalHeight}px 1fr`,
-            gridTemplateColumns: `${sidebarWidth}px calc(100% - ${sidebarWidth}px) 1fr`,
-          }}
-        />
-      )),
-    [sidebarWidth, timebarHeaderHeight, timebarIntervalHeight]
-  );
+  const OuterElementRenderer = forwardRef<
+    HTMLDivElement,
+    { style: CSSProperties }
+  >((props, ref) => (
+    <div
+      {...props}
+      ref={ref}
+      style={{
+        ...props.style,
+        display: 'grid',
+        gridTemplateRows: `${timebarHeaderHeight}px ${timebarIntervalHeight}px 1fr`,
+        gridTemplateColumns: `${sidebarWidth}px calc(100% - ${sidebarWidth}px) 1fr`,
+      }}
+    />
+  ));
 
   return (
     <TimelineContext.Provider
