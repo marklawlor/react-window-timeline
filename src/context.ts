@@ -66,6 +66,7 @@ export interface SidebarRendererProps {
 }
 
 export type UpsertItem<T extends Item = Item> = (item: T) => void;
+export type RemoveItem<T extends Item = Item> = (item: T) => void;
 
 export enum UpdateItemAction {
   MOVE,
@@ -121,6 +122,7 @@ export interface TimelineContextValue {
   overscanColumnStopIndex: number;
   overscanRowStartIndex: number;
   overscanRowStopIndex: number;
+  removeItem: RemoveItem;
   rowCount: number;
   rowHeight: VariableSizeGridProps['rowHeight'];
   rowMap: RowMap<Item>;
@@ -167,6 +169,7 @@ const TimelineContext = createContext<TimelineContextValue>({
   overscanColumnStopIndex: 0,
   overscanRowStartIndex: 0,
   overscanRowStopIndex: 0,
+  removeItem: () => undefined,
   rowCount: 0,
   rowHeight: () => 0,
   rowMap: new Map(),

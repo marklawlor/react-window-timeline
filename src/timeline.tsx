@@ -26,6 +26,7 @@ import TimelineContext, {
   SidebarHeaderRenderer,
   SidebarRenderer,
   BodyRenderer,
+  RemoveItem,
 } from './context';
 
 import innerElementType from './inner-element';
@@ -44,6 +45,7 @@ type VariableSizeGridPropsOmitted =
   | 'innerElementType'
   | 'onItemsRendered'
   | 'outerElementType'
+  | 'removeItem'
   | 'rowCount'
   | 'rowHeight';
 
@@ -75,6 +77,7 @@ export interface TimelineProps<
   itemHeight?: number;
   minItemWidth?: number;
   minGroupHeight?: number;
+  onItemUpdate?: (item: I) => void;
   rowRenderer?: RowRenderer<G>;
   sidebarHeaderRenderer?: SidebarHeaderRenderer;
   sidebarRenderer?: SidebarRenderer;
@@ -115,6 +118,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
     rowRenderer,
     minItemWidth = 5,
     minGroupHeight = 0,
+    onItemUpdate = () => undefined,
     sidebarWidth = 0,
     snapDuration = 1000 * 60, // 1 minute
     timebarIntervalHeight = itemHeight,
@@ -282,6 +286,23 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
     ]
   );
 
+  const removeItem = useCallback<RemoveItem>(
+    ({ id }) => {
+      const item = itemMap.get(id);
+
+      if (!item) {
+        throw new Error('Unable to find item');
+      }
+
+      item.row.removeItem(item);
+      itemMap.delete(item.id);
+      onItemUpdate(item);
+
+      gridRef.current?.resetAfterRowIndex(item.row.index);
+    },
+    [itemMap, onItemUpdate]
+  );
+
   const upsertItem = useCallback<UpsertItem<TItem>>(
     item => {
       const row = Array.from(rowMap.values()).find(
@@ -297,21 +318,22 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
         previous.row.removeItem(item);
       }
 
+      const updatedItem = Object.assign(item, {
+        end: snapTime(item.end, snapDuration),
+        groupId: row.group.id,
+        row,
+        start: snapTime(item.start, snapDuration),
+      });
+
       row.addItem(item);
-      itemMap.set(
-        item.id,
-        Object.assign(item, {
-          end: snapTime(item.end, snapDuration),
-          groupId: row.group.id,
-          row,
-          start: snapTime(item.start, snapDuration),
-        })
-      );
+      itemMap.set(item.id, updatedItem);
+      onItemUpdate(item);
+
       gridRef.current?.resetAfterRowIndex(
         Math.min(row.index, previous?.row.index || row.index)
       );
     },
-    [itemMap, rowMap, snapDuration]
+    [itemMap, rowMap, snapDuration, onItemUpdate]
   );
 
   const createItemAtCursor: TimelineContextValue['createItemAtCursor'] = useCallback(
@@ -454,6 +476,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
         overscanColumnStopIndex,
         overscanRowStartIndex,
         overscanRowStopIndex,
+        removeItem,
         rowCount,
         rowHeight,
         rowMap,
