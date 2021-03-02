@@ -1,5 +1,4 @@
 import React, {
-  CSSProperties,
   forwardRef,
   ReactElement,
   useCallback,
@@ -125,6 +124,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
     sidebarRenderer = props => <div {...props} />,
     initialScrollLeft = 0,
     initialScrollTime,
+    style,
     ...gridProps
   } = props;
 
@@ -380,6 +380,16 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
     ]
   );
 
+  const BodyRenderer = bodyRenderer;
+  const ColumnRenderer = columnRenderer;
+  const GroupRenderer = groupRenderer;
+  const ItemRenderer = itemRenderer;
+  const RowRenderer = rowRenderer;
+  const SidebarHeaderRenderer = sidebarHeaderRenderer;
+  const SidebarRenderer = sidebarRenderer;
+  const TimebarHeaderRenderer = timebarHeaderRenderer;
+  const TimebarIntervalRenderer = timebarIntervalRenderer;
+
   const rowCount = groups.length;
   const columnCount = intervals.length;
   const columnWidth = useCallback(() => intervalWidth, [intervalWidth]);
@@ -402,30 +412,14 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
         ) - sidebarWidth
       );
 
-  const BodyRenderer = bodyRenderer;
-  const ColumnRenderer = columnRenderer;
-  const GroupRenderer = groupRenderer;
-  const ItemRenderer = itemRenderer;
-  const RowRenderer = rowRenderer;
-  const SidebarHeaderRenderer = sidebarHeaderRenderer;
-  const SidebarRenderer = sidebarRenderer;
-  const TimebarHeaderRenderer = timebarHeaderRenderer;
-  const TimebarIntervalRenderer = timebarIntervalRenderer;
-
-  const OuterElementRenderer = useCallback(
-    forwardRef<HTMLDivElement, { style: CSSProperties }>((props, ref) => (
-      <div
-        {...props}
-        ref={ref}
-        style={{
-          ...props.style,
-          display: 'grid',
-          gridTemplateRows: `${timebarHeaderHeight}px ${timebarIntervalHeight}px 1fr`,
-          gridTemplateColumns: `${sidebarWidth}px calc(100% - ${sidebarWidth}px) 1fr`,
-        }}
-      />
-    )),
-    [sidebarWidth, timebarHeaderHeight, timebarIntervalHeight]
+  const outerElementStyle = useMemo(
+    () => ({
+      display: 'grid',
+      gridTemplateRows: `${timebarHeaderHeight}px ${timebarIntervalHeight}px 1fr`,
+      gridTemplateColumns: `${sidebarWidth}px calc(100% - ${sidebarWidth}px) 1fr`,
+      ...style,
+    }),
+    [timebarHeaderHeight, timebarIntervalHeight, sidebarWidth, style]
   );
 
   return (
@@ -482,18 +476,18 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
       <VariableSizeGrid
         {...gridProps}
         ref={gridRef}
-        width={width}
-        height={height}
         columnCount={columnCount}
         columnWidth={columnWidth}
         estimatedColumnWidth={intervalWidth}
+        height={height}
+        initialScrollLeft={initialScrollX}
         innerElementType={innerElementType}
-        outerElementType={OuterElementRenderer}
         onItemsRendered={setVisibleArea}
         outerRef={outerRef}
         rowCount={Math.max(rowCount, 1)}
         rowHeight={rowHeight}
-        initialScrollLeft={initialScrollX}
+        style={outerElementStyle}
+        width={width}
       >
         {noopRenderer}
       </VariableSizeGrid>
