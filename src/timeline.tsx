@@ -3,6 +3,7 @@ import React, {
   forwardRef,
   ReactElement,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -144,7 +145,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
   }, [startTime, endTime, intervalDuration]);
 
   const [itemMap, rowMap] = useMemo(() => {
-    return getTimelineData({
+    const newData = getTimelineData({
       groups,
       items,
       intervals,
@@ -155,6 +156,13 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
       groupTopPadding,
       groupBottomPadding,
     });
+
+    gridRef.current?.resetAfterIndices({
+      columnIndex: 0,
+      rowIndex: 0,
+    });
+
+    return newData;
   }, [
     groups,
     items,
@@ -166,6 +174,13 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
     groupTopPadding,
     groupBottomPadding,
   ]);
+
+  useEffect(() => {
+    gridRef.current?.resetAfterIndices({
+      columnIndex: 0,
+      rowIndex: 0,
+    });
+  }, [width, height]);
 
   const [stickyItemIds, setStickyItemIds] = useState<Array<Item['id']>>([]);
   const handleSetStickyItemIds = useCallback(
@@ -410,20 +425,19 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
   const TimebarHeaderRenderer = timebarHeaderRenderer;
   const TimebarIntervalRenderer = timebarIntervalRenderer;
 
-  const OuterElementRenderer = useMemo(
-    () =>
-      forwardRef<HTMLDivElement, { style: CSSProperties }>((props, ref) => (
-        <div
-          {...props}
-          ref={ref}
-          style={{
-            ...props.style,
-            display: 'grid',
-            gridTemplateRows: `${timebarHeaderHeight}px ${timebarIntervalHeight}px 1fr`,
-            gridTemplateColumns: `${sidebarWidth}px calc(100% - ${sidebarWidth}px) 1fr`,
-          }}
-        />
-      )),
+  const OuterElementRenderer = useCallback(
+    forwardRef<HTMLDivElement, { style: CSSProperties }>((props, ref) => (
+      <div
+        {...props}
+        ref={ref}
+        style={{
+          ...props.style,
+          display: 'grid',
+          gridTemplateRows: `${timebarHeaderHeight}px ${timebarIntervalHeight}px 1fr`,
+          gridTemplateColumns: `${sidebarWidth}px calc(100% - ${sidebarWidth}px) 1fr`,
+        }}
+      />
+    )),
     [sidebarWidth, timebarHeaderHeight, timebarIntervalHeight]
   );
 
