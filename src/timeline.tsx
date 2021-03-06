@@ -262,7 +262,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
 
       if (action !== UpdateItemAction.RESIZE) {
         const row = Array.from(rowMap.values()).find(row => {
-          return row.top <= top && row.top + row.height >= top;
+          return row.top <= top && row.top + row.height > top;
         });
 
         if (!row) {
