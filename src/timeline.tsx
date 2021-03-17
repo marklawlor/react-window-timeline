@@ -413,6 +413,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
   const TimebarIntervalRenderer = timebarIntervalRenderer;
 
   const rowCount = groups.length;
+  // debugger;
   const columnCount = intervals.length;
   const columnWidth = useCallback(() => intervalWidth, [intervalWidth]);
   const rowHeight = useCallback(

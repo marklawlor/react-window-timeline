@@ -4,7 +4,7 @@ import React, {
   ReactElement,
   useContext,
 } from 'react';
-import range from './utils/range';
+import { rangeInclusive } from './utils/range';
 import TimelineContext from './context';
 import { getPositionAtTime } from './utils/time';
 import { Item } from './timeline-data';
@@ -43,15 +43,21 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
     const stickyItems = stickyItemIds.map(id => itemMap.get(id)!);
     const stickyRows = stickyItems.map(item => item.row);
 
-    const visibleRows = range(overscanRowStartIndex, overscanRowStopIndex).map(
-      rowIndex => rowMap.get(rowIndex)!
-    );
+    const visibleRows =
+      rowMap.size > 0
+        ? rangeInclusive(overscanRowStartIndex, overscanRowStopIndex).map(
+            rowIndex => rowMap.get(rowIndex)!
+          )
+        : [];
 
     const rows = Array.from(new Set([...stickyRows, ...visibleRows])).sort(
       (a, b) => a.index - b.index
     );
 
-    const columns = range(overscanColumnStartIndex, overscanColumnStopIndex);
+    const columns = rangeInclusive(
+      overscanColumnStartIndex,
+      overscanColumnStopIndex
+    );
 
     return (
       <>

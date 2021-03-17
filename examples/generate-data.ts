@@ -5,7 +5,7 @@ import range from '../src/utils/range';
 export function randomGroups(
   n: number
 ): Array<Group & { color: CSSProperties['backgroundColor'] }> {
-  return range(n).map(index => ({
+  return range(0, n).map(index => ({
     id: index.toString(),
     name: `Group ${index}`,
     color: randomBackgroundColor(),
@@ -21,7 +21,7 @@ export function randomItems(
 ): Item[] {
   return groups.flatMap(group => {
     const n = Math.floor(Math.random() * nMax) + nMin;
-    return range(n).map(index => {
+    return range(0, n).map(index => {
       const [start, end] = [
         getRandomDate(startTime, endTime),
         getRandomDate(startTime, endTime),

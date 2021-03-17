@@ -21,7 +21,7 @@ export default function InteractiveExample(): ReactElement {
   const endTime = addDays(startOfDay(new Date()), 1).getTime();
   const intervalDuration = 1000 * 60 * 60; // 1 hour
 
-  const groups = useMemo(() => randomGroups(100), []);
+  const groups = useMemo(() => randomGroups(2), []);
 
   const items = useMemo(() => randomItems(groups, 1, 50, startTime, endTime), [
     groups,
@@ -35,6 +35,7 @@ export default function InteractiveExample(): ReactElement {
     <div
       style={{ height: '100vh', boxSizing: 'border-box', overflow: 'hidden' }}
     >
+      <div>{groups.length}</div>
       <AutoSizer>
         {({ width, height }) => {
           const sidebarWidth = 150;
