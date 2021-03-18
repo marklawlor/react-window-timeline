@@ -12,6 +12,7 @@ function getLocale() {
 export default function TimebarIntervalRenderer({
   time,
   style,
+  isDay,
 }: TimebarIntervalRendererProps): ReactElement {
   const { intervalDuration } = useContext(TimelineContext);
   const { interaction } = useContext(InteractionContext);
@@ -35,6 +36,26 @@ export default function TimebarIntervalRenderer({
     ) {
       isActive = true;
     }
+  }
+
+  if (isDay) {
+    return (
+      <div
+        style={{
+          ...style,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderRight: '1px solid grey',
+          borderBottom: '1px solid grey',
+          backgroundColor: isActive ? 'red' : 'white',
+        }}
+      >
+        {new Date(time).toLocaleString(getLocale(), {
+          weekday: 'long',
+          day: 'numeric',
+        } as Intl.DateTimeFormatOptions)}
+      </div>
+    );
   }
 
   return (

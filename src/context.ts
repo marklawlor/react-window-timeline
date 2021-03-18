@@ -41,6 +41,7 @@ export interface TimebarIntervalRendererProps {
   time: number;
   isOdd: boolean;
   isEven: boolean;
+  isDay: boolean;
   style: CSSProperties;
 }
 
@@ -48,7 +49,7 @@ export type RowRenderer<T extends Group = Group> = FC<GroupRendererProps<T>>;
 export type RowRendererProps<T extends Group = Group> = GroupRendererProps<T>;
 
 export type ColumnRenderer = TimebarIntervalRenderer;
-export type ColumnRendererProps = TimebarIntervalRendererProps;
+export type ColumnRendererProps = Omit<TimebarIntervalRendererProps, 'isDay'>;
 
 export type TimebarHeaderRenderer = FC<TimebarHeaderProps>;
 export interface TimebarHeaderProps {

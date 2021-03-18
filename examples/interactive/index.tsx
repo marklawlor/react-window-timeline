@@ -21,7 +21,7 @@ export default function InteractiveExample(): ReactElement {
   const endTime = addDays(startOfDay(new Date()), 1).getTime();
   const intervalDuration = 1000 * 60 * 60; // 1 hour
 
-  const groups = useMemo(() => randomGroups(2), []);
+  const groups = useMemo(() => randomGroups(100), []);
 
   const items = useMemo(() => randomItems(groups, 1, 50, startTime, endTime), [
     groups,
@@ -35,13 +35,12 @@ export default function InteractiveExample(): ReactElement {
     <div
       style={{ height: '100vh', boxSizing: 'border-box', overflow: 'hidden' }}
     >
-      <div>{groups.length}</div>
       <AutoSizer>
         {({ width, height }) => {
           const sidebarWidth = 150;
 
           // Fit 12 intervals, floor to remove rounding errors
-          const intervalWidth = Math.floor((width - sidebarWidth) / 12);
+          const intervalWidth = 75;
 
           return (
             <InteractionContextProvider>
@@ -66,10 +65,11 @@ export default function InteractiveExample(): ReactElement {
                 sidebarHeaderRenderer={SidebarHeaderRenderer}
                 sidebarRenderer={SidebarRenderer}
                 sidebarWidth={sidebarWidth}
-                timebarHeaderHeight={250}
+                timebarHeaderHeight={150}
                 timebarHeaderRenderer={TimebarHeaderRenderer}
                 timebarIntervalHeight={50}
-                timebarIntervalRenderer={TimebarIntervalRenderer}
+                timebarIntervalRenderer={TimebarIntervalRenderer as any}
+                overscanColumnCount={5}
               >
                 <div id="test" />
               </Timeline>

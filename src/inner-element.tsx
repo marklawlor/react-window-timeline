@@ -8,6 +8,7 @@ import { rangeInclusive } from './utils/range';
 import TimelineContext from './context';
 import { getPositionAtTime } from './utils/time';
 import { Item } from './timeline-data';
+import { eachDayOfInterval } from 'date-fns';
 
 export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
   function TimelineInner({ style }, ref) {
@@ -34,6 +35,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
       rowMap,
       sidebarWidth,
       startTime,
+      endTime,
       stickyItemIds,
       timebarHeight,
       timebarHeaderHeight,
@@ -58,6 +60,11 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
       overscanColumnStartIndex,
       overscanColumnStopIndex
     );
+
+    const days = eachDayOfInterval({
+      start: startTime,
+      end: endTime - 1,
+    });
 
     return (
       <>
@@ -205,7 +212,10 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
             position: 'sticky',
             left: 0,
             minHeight: style.height,
-            paddingTop: (visibleRows[0]?.top || 0) + timebarHeight,
+            paddingTop:
+              (visibleRows[0]?.top || 0) +
+              timebarIntervalHeight * 2 +
+              timebarHeaderHeight,
             boxSizing: 'border-box',
           }}
         >
@@ -241,9 +251,38 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
             top: timebarHeaderHeight,
             gridArea: '2 / 1 / 3 / 3',
             overflow: 'visible',
-            marginLeft: columns[0] * intervalWidth + sidebarWidth,
           }}
         >
+          <span style={{ marginLeft: sidebarWidth }}></span>
+          {days.map((day, index) => {
+            if (!TimebarIntervalRenderer) {
+              return null;
+            }
+
+            return (
+              <TimebarIntervalRenderer
+                key={`timebar_interval:${day}`}
+                isOdd={index % 2 === 1}
+                isEven={index % 2 === 0}
+                time={day.getTime()}
+                isDay
+                style={{
+                  display: 'inline-flex',
+                  boxSizing: 'border-box',
+                  width:
+                    ((1000 * 60 * 60 * 24) / intervalDuration) * intervalWidth,
+                  top: timebarHeaderHeight,
+                  height: timebarIntervalHeight,
+                  verticalAlign: 'top',
+                  userSelect: 'none',
+                }}
+              />
+            );
+          })}
+          <br />
+          <span
+            style={{ marginLeft: columns[0] * intervalWidth + sidebarWidth }}
+          ></span>
           {columns.flatMap(column => [
             TimebarIntervalRenderer && (
               <TimebarIntervalRenderer
@@ -251,6 +290,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                 isOdd={column % 2 === 1}
                 isEven={column % 2 === 0}
                 time={startTime + intervalDuration * column}
+                isDay={false}
                 style={{
                   position: 'sticky',
                   display: 'inline-flex',
