@@ -48,7 +48,7 @@ export interface TimebarIntervalRendererProps {
 export type RowRenderer<T extends Group = Group> = FC<GroupRendererProps<T>>;
 export type RowRendererProps<T extends Group = Group> = GroupRendererProps<T>;
 
-export type ColumnRenderer = TimebarIntervalRenderer;
+export type ColumnRenderer = FC<ColumnRendererProps>;
 export type ColumnRendererProps = Omit<TimebarIntervalRendererProps, 'isDay'>;
 
 export type TimebarHeaderRenderer = FC<TimebarHeaderProps>;
@@ -106,10 +106,9 @@ export interface TimelineContextValue {
   children?: ReactElement | null;
   columnCount: number;
   columnWidth: VariableSizeGridProps['columnWidth'];
+  createItemAtCursor: CreateItemAtCursor;
   endTime: number;
   getUpdatedItem: GetUpdatedItem;
-  createItemAtCursor: CreateItemAtCursor;
-  groups: Group[];
   height: number;
   intervalDuration: number;
   intervalWidth: number;
@@ -128,12 +127,12 @@ export interface TimelineContextValue {
   rowHeight: VariableSizeGridProps['rowHeight'];
   rowMap: RowMap<Item>;
   setStickyItemIds: (items: Array<Item['id']>) => void;
-  sidebarWidth: number;
+  collectionSidebarWidth: number;
+  groupSidebarWidth: number;
   snapDuration: number;
   startTime: number;
   stickyItemIds: Array<Item['id']>;
   timebarHeaderHeight: number;
-  timebarHeight: number;
   timebarIntervalHeight: number;
   upsertItem: UpsertItem;
   visibleColumnStartIndex: number;
@@ -153,10 +152,9 @@ const TimelineContext = createContext<TimelineContextValue>({
   TimebarIntervalRenderer: () => null,
   columnCount: 0,
   columnWidth: () => 0,
+  createItemAtCursor: () => null,
   endTime: 0,
   getUpdatedItem: () => null,
-  createItemAtCursor: () => null,
-  groups: [],
   height: 0,
   intervalDuration: 0,
   intervalWidth: 0,
@@ -175,12 +173,12 @@ const TimelineContext = createContext<TimelineContextValue>({
   rowHeight: () => 0,
   rowMap: new Map(),
   setStickyItemIds: () => undefined,
-  sidebarWidth: 0,
+  collectionSidebarWidth: 0,
+  groupSidebarWidth: 0,
   snapDuration: 0,
   startTime: 0,
   stickyItemIds: [],
   timebarHeaderHeight: 0,
-  timebarHeight: 0,
   timebarIntervalHeight: 0,
   upsertItem: () => undefined,
   visibleColumnStartIndex: 0,

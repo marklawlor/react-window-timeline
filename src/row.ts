@@ -1,6 +1,14 @@
-import { Group, Item, ItemMap, MappedItem, RowMap } from './timeline-data';
+import {
+  Group,
+  Item,
+  ItemMap,
+  MappedItem,
+  RowCollection,
+  RowMap,
+} from './timeline-data';
 
 export interface RowOptions {
+  collection: RowCollection<any>;
   group: Group;
   index: number;
   intervals: number[];
@@ -16,7 +24,7 @@ export interface RowOptions {
 export default class Row<T extends Item = Item> {
   group: Group;
   index: number;
-
+  collection: RowCollection<any>;
   intervals: number[];
   itemHeight: number;
   itemIds: Set<Item['id']> = new Set();
@@ -32,6 +40,7 @@ export default class Row<T extends Item = Item> {
   private _height: number | undefined;
 
   constructor({
+    collection,
     group,
     index,
     intervals,
@@ -43,6 +52,7 @@ export default class Row<T extends Item = Item> {
     groupTopPadding,
     groupBottomPadding,
   }: RowOptions) {
+    this.collection = collection;
     this.group = group;
     this.index = index;
     this.intervals = intervals;
@@ -72,7 +82,7 @@ export default class Row<T extends Item = Item> {
     const previousRow = this.rowMap.get(this.index - 1)!;
 
     if (!previousRow) {
-      return 0; //this.timebarHeight;
+      return 0;
     }
 
     return previousRow.top + previousRow.height;

@@ -21,7 +21,7 @@ export default function InteractiveExample(): ReactElement {
   const endTime = addDays(startOfDay(new Date()), 1).getTime();
   const intervalDuration = 1000 * 60 * 60; // 1 hour
 
-  const groups = useMemo(() => randomGroups(100), []);
+  const groups = useMemo(() => randomGroups(6), []);
 
   const items = useMemo(() => randomItems(groups, 1, 50, startTime, endTime), [
     groups,
@@ -37,8 +37,6 @@ export default function InteractiveExample(): ReactElement {
     >
       <AutoSizer>
         {({ width, height }) => {
-          const sidebarWidth = 150;
-
           // Fit 12 intervals, floor to remove rounding errors
           const intervalWidth = 75;
 
@@ -50,26 +48,37 @@ export default function InteractiveExample(): ReactElement {
                 width={width}
                 height={height}
                 items={items}
-                groups={groups}
+                collections={[
+                  {
+                    name: 'my-collection',
+                    groups: groups.slice(0, groups.length / 2),
+                  },
+                  {
+                    name: 'my-collection2',
+                    groups: groups.slice(groups.length / 2),
+                  },
+                ]}
                 intervalDuration={intervalDuration}
                 bodyRenderer={BodyRenderer}
                 columnRenderer={ColumnRenderer}
                 estimatedRowHeight={500}
-                groupRenderer={GroupRenderer}
+                groupRenderer={GroupRenderer as any}
                 initialScrollTime={addMinutes(startTime, 3 * 60).getTime()}
                 intervalWidth={intervalWidth}
                 itemData={{ groups: groupMap }}
                 itemHeight={20}
                 itemRenderer={InteractiveItemRenderer}
-                rowRenderer={RowRenderer}
+                rowRenderer={RowRenderer as any}
                 sidebarHeaderRenderer={SidebarHeaderRenderer}
                 sidebarRenderer={SidebarRenderer}
-                sidebarWidth={sidebarWidth}
+                collectionSidebarWidth={50}
+                groupSidebarWidth={50}
                 timebarHeaderHeight={150}
                 timebarHeaderRenderer={TimebarHeaderRenderer}
                 timebarIntervalHeight={50}
                 timebarIntervalRenderer={TimebarIntervalRenderer as any}
                 overscanColumnCount={5}
+                overscanRowCount={5}
               >
                 <div id="test" />
               </Timeline>

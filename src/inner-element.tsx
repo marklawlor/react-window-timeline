@@ -33,11 +33,11 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
       overscanRowStartIndex,
       overscanRowStopIndex,
       rowMap,
-      sidebarWidth,
+      collectionSidebarWidth,
+      groupSidebarWidth,
       startTime,
       endTime,
       stickyItemIds,
-      timebarHeight,
       timebarHeaderHeight,
       timebarIntervalHeight,
     } = useContext(TimelineContext);
@@ -51,6 +51,11 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
             rowIndex => rowMap.get(rowIndex)!
           )
         : [];
+
+    const visibleCollections = new Set(visibleRows.map(row => row.collection));
+
+    const sidebarWidth = collectionSidebarWidth + groupSidebarWidth;
+    const timebarHeight = timebarHeaderHeight + timebarIntervalHeight;
 
     const rows = Array.from(new Set([...stickyRows, ...visibleRows])).sort(
       (a, b) => a.index - b.index
@@ -73,7 +78,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
         {ColumnRenderer && (
           <div
             style={{
-              gridArea: '3 / 1 / 4 / 3',
+              gridArea: '3 / 1 / 4 / 4',
               position: 'sticky',
               top: timebarHeight,
             }}
@@ -132,7 +137,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
           ref={ref}
           style={{
             whiteSpace: 'nowrap',
-            gridArea: '3 / 2 / 3 / 4',
+            gridArea: '3 / 3 / 3 / 4',
             position: 'relative',
             minHeight: style.height,
             minWidth: style.width,
@@ -219,9 +224,48 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
             boxSizing: 'border-box',
           }}
         >
+          {Array.from(visibleCollections.values()).map(collection => {
+            return [
+              collectionSidebarWidth > 0 && GroupRenderer && (
+                <GroupRenderer
+                  key={`group:${collection.index}`}
+                  rowIndex={collection.index}
+                  group={collection}
+                  isOdd={collection.index % 2 === 1}
+                  isEven={collection.index % 2 === 0}
+                  style={{
+                    position: 'sticky',
+                    display: 'block',
+                    boxSizing: 'border-box',
+                    width: '100%',
+                    height: collection.rows.reduce((acc, row) => {
+                      return acc + row.height;
+                    }, 0),
+                    left: 0,
+                    userSelect: 'none',
+                  }}
+                />
+              ),
+            ];
+          })}
+        </SidebarRenderer>
+
+        <SidebarRenderer
+          style={{
+            gridArea: '1 / 2 / 4 / 3',
+            position: 'sticky',
+            minHeight: style.height,
+            left: collectionSidebarWidth,
+            paddingTop:
+              (visibleRows[0]?.top || 0) +
+              timebarIntervalHeight * 2 +
+              timebarHeaderHeight,
+            boxSizing: 'border-box',
+          }}
+        >
           {visibleRows.flatMap(row => {
             return [
-              sidebarWidth > 0 && GroupRenderer && (
+              groupSidebarWidth > 0 && GroupRenderer && (
                 <GroupRenderer
                   key={`group:${row.index}`}
                   rowIndex={row.index}
@@ -232,7 +276,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                     position: 'sticky',
                     display: 'block',
                     boxSizing: 'border-box',
-                    width: sidebarWidth,
+                    width: '100%',
                     height: row.height,
                     left: 0,
                     userSelect: 'none',
@@ -249,7 +293,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
             position: 'sticky',
             boxSizing: 'border-box',
             top: timebarHeaderHeight,
-            gridArea: '2 / 1 / 3 / 3',
+            gridArea: '2 / 1 / 3 / 4',
             overflow: 'visible',
           }}
         >
@@ -313,7 +357,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
             boxSizing: 'border-box',
             top: timebarHeaderHeight,
             left: 0,
-            gridArea: '2 / 1 / 3 / 2',
+            gridArea: '2 / 1 / 3 / 3',
           }}
         />
 
@@ -325,7 +369,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
               top: 0,
               left: 0,
               zIndex: 3,
-              gridArea: '1 / 1 / 2 / 3',
+              gridArea: '1 / 1 / 2 / 4',
             }}
           />
         )}

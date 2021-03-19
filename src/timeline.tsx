@@ -30,7 +30,7 @@ import TimelineContext, {
 } from './context';
 
 import innerElementType from './inner-element';
-import { getTimelineData, Group, Item } from './timeline-data';
+import { Collection, getTimelineData, Group, Item } from './timeline-data';
 import {
   getIntervals,
   getPositionAtTime,
@@ -56,7 +56,7 @@ export interface TimelineProps<
 > extends Omit<VariableSizeGridProps, VariableSizeGridPropsOmitted> {
   // Required
   endTime: number;
-  groups: Group[];
+  collections: Collection[];
   height: number;
   intervalDuration: number;
   intervalWidth: number;
@@ -81,7 +81,8 @@ export interface TimelineProps<
   rowRenderer?: RowRenderer<G>;
   sidebarHeaderRenderer?: SidebarHeaderRenderer;
   sidebarRenderer?: SidebarRenderer;
-  sidebarWidth?: number;
+  collectionSidebarWidth?: number;
+  groupSidebarWidth?: number;
   snapDuration?: number;
   timebarHeaderHeight?: number;
   timebarHeaderRenderer?: TimebarHeaderRenderer;
@@ -95,7 +96,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
   const {
     // Required
     endTime: initialEndTime,
-    groups,
+    collections,
     height,
     intervalDuration,
     intervalWidth,
@@ -119,7 +120,8 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
     minItemWidth = 5,
     minGroupHeight = 0,
     onItemUpdate = () => undefined,
-    sidebarWidth = 0,
+    collectionSidebarWidth = 0,
+    groupSidebarWidth = 0,
     snapDuration = 1000 * 60, // 1 minute
     timebarIntervalHeight = itemHeight,
     timebarHeaderHeight = 0,
@@ -138,6 +140,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
   const startTime = snapTime(initialStartTime, snapDuration);
   const endTime = snapTime(initialEndTime, snapDuration);
   const timebarHeight = timebarIntervalHeight + timebarHeaderHeight;
+  const sidebarWidth = collectionSidebarWidth + groupSidebarWidth;
 
   const intervals = useMemo(() => {
     return getIntervals(
@@ -150,7 +153,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
   const [itemMap, rowMap] = useMemo(() => {
     gridRef.current?.resetAfterRowIndex(0, false);
     return getTimelineData({
-      groups,
+      collections,
       items,
       intervals,
       itemHeight,
@@ -161,7 +164,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
       groupBottomPadding,
     });
   }, [
-    groups,
+    collections,
     items,
     intervals,
     itemHeight,
@@ -412,8 +415,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
   const TimebarHeaderRenderer = timebarHeaderRenderer;
   const TimebarIntervalRenderer = timebarIntervalRenderer;
 
-  const rowCount = groups.length;
-  // debugger;
+  const rowCount = rowMap.size;
   const columnCount = intervals.length;
   const columnWidth = useCallback(() => intervalWidth, [intervalWidth]);
   const rowHeight = useCallback(
@@ -440,10 +442,17 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
       display: 'grid',
       gridTemplateRows: `${timebarHeaderHeight}px ${timebarIntervalHeight *
         2}px 1fr`,
-      gridTemplateColumns: `${sidebarWidth}px calc(100% - ${sidebarWidth}px) 1fr`,
+      gridTemplateColumns: `${collectionSidebarWidth}px ${groupSidebarWidth}px calc(100% - ${sidebarWidth}px) 1fr`,
       ...style,
     }),
-    [timebarHeaderHeight, timebarIntervalHeight, sidebarWidth, style]
+    [
+      timebarHeaderHeight,
+      timebarIntervalHeight,
+      collectionSidebarWidth,
+      groupSidebarWidth,
+      sidebarWidth,
+      style,
+    ]
   );
 
   return (
@@ -462,7 +471,6 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
         columnWidth,
         endTime,
         getUpdatedItem,
-        groups,
         createItemAtCursor,
         height,
         intervalDuration,
@@ -483,12 +491,12 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
         rowHeight,
         rowMap,
         setStickyItemIds: handleSetStickyItemIds,
-        sidebarWidth,
+        collectionSidebarWidth,
+        groupSidebarWidth,
         snapDuration,
         startTime,
         stickyItemIds,
         timebarHeaderHeight,
-        timebarHeight,
         timebarIntervalHeight,
         upsertItem: upsertItem as TimelineContextValue['upsertItem'],
         visibleColumnStartIndex,

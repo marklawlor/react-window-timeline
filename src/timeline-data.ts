@@ -1,6 +1,11 @@
 import Row from './row';
 import { snapTime } from './utils/time';
 
+export interface Collection {
+  name: string;
+  groups: Group[];
+}
+
 export interface Group {
   id: string;
   name: string;
@@ -19,8 +24,14 @@ export type ItemMap<T extends Item = Item> = Map<string, MappedItem<T>>;
 
 export type RowMap<T extends Item> = Map<number, Row<T>>;
 
+export type RowCollection<T extends Item> = {
+  index: number;
+  name: string;
+  rows: Array<Row<T>>;
+};
+
 export interface MapTimelineDateOptions<T extends Item> {
-  groups: Group[];
+  collections: Collection[];
   intervals: number[];
   items: T[];
   itemHeight: number;
@@ -32,7 +43,7 @@ export interface MapTimelineDateOptions<T extends Item> {
 }
 
 export function getTimelineData<T extends Item>({
-  groups,
+  collections,
   intervals,
   itemHeight,
   items,
@@ -44,27 +55,37 @@ export function getTimelineData<T extends Item>({
 }: MapTimelineDateOptions<T>): [ItemMap<T>, RowMap<T>] {
   const itemMap: ItemMap<T> = new Map();
   const rowMap: RowMap<T> = new Map();
+
   const groupMap: Record<string, Row<T>> = {};
 
-  const rows: Row<T>[] = [];
+  let rowCounter = 0;
 
-  for (const [index, group] of groups.entries()) {
-    const row = new Row<T>({
-      group,
+  for (const [index, { groups, name }] of collections.entries()) {
+    const collection: RowCollection<T> = {
       index,
-      intervals,
-      itemHeight,
-      itemMap,
-      rowMap,
-      timebarHeight,
-      minGroupHeight,
-      groupTopPadding,
-      groupBottomPadding,
-    });
+      name,
+      rows: [],
+    };
 
-    rows.push(row);
-    rowMap.set(row.index, row);
-    groupMap[group.id] = row;
+    for (const group of groups.values()) {
+      const row = new Row<T>({
+        group,
+        collection,
+        index: rowCounter++,
+        intervals,
+        itemHeight,
+        itemMap,
+        rowMap,
+        timebarHeight,
+        minGroupHeight,
+        groupTopPadding,
+        groupBottomPadding,
+      });
+
+      collection.rows.push(row);
+      rowMap.set(row.index, row);
+      groupMap[group.id] = row;
+    }
   }
 
   for (const item of items) {

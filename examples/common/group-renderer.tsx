@@ -8,7 +8,11 @@ export default function GroupRenderer({
 }: GroupRendererProps<
   Group & { color: CSSProperties['backgroundColor'] }
 >): ReactElement {
-  const { timebarHeight } = useContext(TimelineContext);
+  const { timebarHeaderHeight, timebarIntervalHeight } = useContext(
+    TimelineContext
+  );
+
+  const timebarHeight = timebarHeaderHeight + timebarIntervalHeight;
 
   return (
     <div style={{ ...style, backgroundColor: 'white' }}>
