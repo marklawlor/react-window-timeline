@@ -7,7 +7,7 @@ import React, {
 import { rangeInclusive } from './utils/range';
 import TimelineContext from './context';
 import { getPositionAtTime } from './utils/time';
-import { Item } from './timeline-data';
+import { ChildGroup, Item } from './timeline-data';
 import { eachDayOfInterval } from 'date-fns';
 
 export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
@@ -229,8 +229,8 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
               collectionSidebarWidth > 0 && GroupRenderer && (
                 <GroupRenderer
                   key={`group:${collection.index}`}
+                  group={(collection as unknown) as ChildGroup}
                   rowIndex={collection.index}
-                  group={collection}
                   isOdd={collection.index % 2 === 1}
                   isEven={collection.index % 2 === 0}
                   style={{

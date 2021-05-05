@@ -27,7 +27,7 @@ export default function InteractiveExample(): ReactElement {
         intervalDuration={1000 * 60 * 60}
         intervalWidth={100}
         items={items}
-        collections={[{ name: 'my-collection', groups }]}
+        groups={groups}
         groupSidebarWidth={100}
         bodyRenderer={BodyRenderer}
         itemRenderer={({ style }) => (

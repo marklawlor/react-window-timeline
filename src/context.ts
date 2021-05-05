@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { VariableSizeGridProps } from 'react-window';
 
-import { Group, Item, ItemMap, RowMap } from './timeline-data';
+import { ChildGroup, Item, ItemMap, RowMap } from './timeline-data';
 
 export type BodyRenderer = ForwardRefRenderFunction<
   HTMLElement,
@@ -27,13 +27,13 @@ export interface ItemRendererProps<T extends Item = Item> {
   style: CSSProperties;
 }
 
-export type GroupRenderer<T extends Group = Group> = FC<GroupRendererProps<T>>;
-export interface GroupRendererProps<T extends Group = Group> {
-  group: T;
+export type GroupRenderer = FC<GroupRendererProps>;
+export interface GroupRendererProps {
   rowIndex: number;
   isOdd: boolean;
   isEven: boolean;
   style: CSSProperties;
+  group: ChildGroup;
 }
 
 export type TimebarIntervalRenderer = FC<TimebarIntervalRendererProps>;
@@ -45,8 +45,8 @@ export interface TimebarIntervalRendererProps {
   style: CSSProperties;
 }
 
-export type RowRenderer<T extends Group = Group> = FC<GroupRendererProps<T>>;
-export type RowRendererProps<T extends Group = Group> = GroupRendererProps<T>;
+export type RowRenderer = FC<GroupRendererProps>;
+export type RowRendererProps = GroupRendererProps;
 
 export type ColumnRenderer = FC<ColumnRendererProps>;
 export type ColumnRendererProps = Omit<TimebarIntervalRendererProps, 'isDay'>;
@@ -85,7 +85,7 @@ export type CreateItemAtCursor = (
   defaultValues: Partial<Item> & {
     id: Item['id'];
     duration: number;
-    defaultGroupId?: Group['id'];
+    defaultGroupId?: ChildGroup['id'];
   }
 ) => null | {
   start: number;
@@ -96,9 +96,9 @@ export type CreateItemAtCursor = (
 export interface TimelineContextValue {
   BodyRenderer: BodyRenderer;
   ColumnRenderer?: ColumnRenderer;
-  GroupRenderer?: GroupRenderer<any>;
+  GroupRenderer?: GroupRenderer;
   ItemRenderer: ItemRenderer<any>;
-  RowRenderer?: RowRenderer<any>;
+  RowRenderer?: RowRenderer;
   SidebarHeaderRenderer: SidebarHeaderRenderer;
   SidebarRenderer: SidebarRenderer;
   TimebarHeaderRenderer?: TimebarHeaderRenderer;
@@ -125,7 +125,7 @@ export interface TimelineContextValue {
   removeItem: RemoveItem;
   rowCount: number;
   rowHeight: VariableSizeGridProps['rowHeight'];
-  rowMap: RowMap<Item>;
+  rowMap: RowMap;
   setStickyItemIds: (items: Array<Item['id']>) => void;
   collectionSidebarWidth: number;
   groupSidebarWidth: number;

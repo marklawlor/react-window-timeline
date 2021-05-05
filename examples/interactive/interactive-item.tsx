@@ -32,11 +32,11 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
 
   const { setInteraction } = useContext(InteractionContext);
 
-  const { groups } = itemData;
-  const group = groups[item.groupId];
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const originalGroup = useMemo(() => group, []);
+  const originalGroup = useMemo(
+    () => itemData.groups.find((group: any) => group.id === item.groupId),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   // Create the interactions
   const setRef = useCallback(
@@ -106,7 +106,11 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
                 );
 
                 if (!updatedItem) {
-                  throw new Error('Failed to move item');
+                  node.style.transform = '';
+                  dragPosition = { x: 0, y: 0 };
+                  setInteraction(null);
+                  setStickyItemIds([]);
+                  return;
                 }
 
                 upsertItem(updatedItem);

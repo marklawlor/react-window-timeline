@@ -1,14 +1,12 @@
-import React, { CSSProperties, ReactElement, useContext } from 'react';
+import React, { ReactElement, useContext } from 'react';
 
-import { Group, RowRendererProps } from '../../src';
+import { RowRendererProps } from '../../src';
 import InteractionContext from '../interactive/interaction-context';
 
 export default function RowRenderer({
   group,
   style,
-}: RowRendererProps<
-  Group & { color: CSSProperties['backgroundColor'] }
->): ReactElement {
+}: RowRendererProps): ReactElement {
   const { interaction } = useContext(InteractionContext);
 
   const isActive = interaction && interaction.groupId === group.id;

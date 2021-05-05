@@ -1,5 +1,5 @@
 import {
-  Group,
+  ChildGroup,
   Item,
   ItemMap,
   MappedItem,
@@ -8,28 +8,28 @@ import {
 } from './timeline-data';
 
 export interface RowOptions {
-  collection: RowCollection<any>;
-  group: Group;
+  collection: RowCollection;
+  group: ChildGroup;
   index: number;
   intervals: number[];
   itemHeight: number;
   itemMap: ItemMap;
-  rowMap: RowMap<any>;
+  rowMap: RowMap;
   timebarHeight: number;
   minGroupHeight: number;
   groupTopPadding: number;
   groupBottomPadding: number;
 }
 
-export default class Row<T extends Item = Item> {
-  group: Group;
+export default class Row {
+  group: ChildGroup;
   index: number;
-  collection: RowCollection<any>;
+  collection: RowCollection;
   intervals: number[];
   itemHeight: number;
   itemIds: Set<Item['id']> = new Set();
   itemMap: ItemMap;
-  rowMap: RowMap<any>;
+  rowMap: RowMap;
   timebarHeight: number;
   minGroupHeight: number;
   groupTopPadding: number;
@@ -146,14 +146,16 @@ export default class Row<T extends Item = Item> {
     this._height = undefined;
   }
 
-  removeItem(item: T): void {
+  removeItem(item: Item): void {
     this.itemIds.delete(item.id);
     // Force the height be be recalculated
     this._height = undefined;
   }
 
-  getItemTopOffset(item: T, itemHeight: number): number {
-    return this.offsets[item.id as T['id']] * itemHeight + this.groupTopPadding;
+  getItemTopOffset(item: Item, itemHeight: number): number {
+    return (
+      this.offsets[item.id as Item['id']] * itemHeight + this.groupTopPadding
+    );
   }
 
   getItemsByIntervalRange(startIndex: number, endIndex: number): MappedItem[] {

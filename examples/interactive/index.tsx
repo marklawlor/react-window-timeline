@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useState } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { addDays, addMinutes, startOfDay } from 'date-fns';
 
@@ -21,15 +21,21 @@ export default function InteractiveExample(): ReactElement {
   const endTime = addDays(startOfDay(new Date()), 1).getTime();
   const intervalDuration = 1000 * 60 * 60; // 1 hour
 
-  const groups = useMemo(() => randomGroups(6), []);
+  const [childGroups] = useState(() => randomGroups(6));
+  const [items] = useState(() =>
+    randomItems(childGroups, 1, 5, startTime, endTime)
+  );
 
-  const items = useMemo(() => randomItems(groups, 1, 50, startTime, endTime), [
-    groups,
-    startTime,
-    endTime,
+  const [groups] = useState(() => [
+    {
+      name: 'my-collection',
+      groups: childGroups.slice(0, childGroups.length / 2),
+    },
+    {
+      name: 'my-collection2',
+      groups: childGroups.slice(childGroups.length / 2),
+    },
   ]);
-
-  const groupMap = Object.fromEntries(groups.map(group => [group.id, group]));
 
   return (
     <div
@@ -43,42 +49,36 @@ export default function InteractiveExample(): ReactElement {
           return (
             <InteractionContextProvider>
               <Timeline
+                /* Data */
                 startTime={startTime}
                 endTime={endTime}
                 width={width}
                 height={height}
                 items={items}
-                collections={[
-                  {
-                    name: 'my-collection',
-                    groups: groups.slice(0, groups.length / 2),
-                  },
-                  {
-                    name: 'my-collection2',
-                    groups: groups.slice(groups.length / 2),
-                  },
-                ]}
+                groups={groups}
+                itemData={{ groups: childGroups }}
+                /* Options */
                 intervalDuration={intervalDuration}
-                bodyRenderer={BodyRenderer}
-                columnRenderer={ColumnRenderer}
                 estimatedRowHeight={500}
-                groupRenderer={GroupRenderer as any}
                 initialScrollTime={addMinutes(startTime, 3 * 60).getTime()}
                 intervalWidth={intervalWidth}
-                itemData={{ groups: groupMap }}
                 itemHeight={20}
+                collectionSidebarWidth={150}
+                groupSidebarWidth={150}
+                timebarHeaderHeight={150}
+                timebarIntervalHeight={50}
+                overscanColumnCount={5}
+                overscanRowCount={5}
+                /* Renderers */
+                bodyRenderer={BodyRenderer}
+                columnRenderer={ColumnRenderer}
+                groupRenderer={GroupRenderer as any}
                 itemRenderer={InteractiveItemRenderer}
                 rowRenderer={RowRenderer as any}
                 sidebarHeaderRenderer={SidebarHeaderRenderer}
                 sidebarRenderer={SidebarRenderer}
-                collectionSidebarWidth={50}
-                groupSidebarWidth={50}
-                timebarHeaderHeight={150}
                 timebarHeaderRenderer={TimebarHeaderRenderer}
-                timebarIntervalHeight={50}
                 timebarIntervalRenderer={TimebarIntervalRenderer as any}
-                overscanColumnCount={5}
-                overscanRowCount={5}
               >
                 <div id="test" />
               </Timeline>

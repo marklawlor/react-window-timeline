@@ -30,7 +30,12 @@ import TimelineContext, {
 } from './context';
 
 import innerElementType from './inner-element';
-import { Collection, getTimelineData, Group, Item } from './timeline-data';
+import {
+  ChildGroup,
+  getTimelineData,
+  Item,
+  ParentGroup,
+} from './timeline-data';
 import {
   getIntervals,
   getPositionAtTime,
@@ -49,19 +54,16 @@ type VariableSizeGridPropsOmitted =
   | 'rowCount'
   | 'rowHeight';
 
-export interface TimelineProps<
-  I extends Item = Item,
-  G extends Group = Group,
-  D = any
-> extends Omit<VariableSizeGridProps, VariableSizeGridPropsOmitted> {
+export interface TimelineProps
+  extends Omit<VariableSizeGridProps, VariableSizeGridPropsOmitted> {
   // Required
   endTime: number;
-  collections: Collection[];
+  groups: ParentGroup[] | ChildGroup[];
   height: number;
   intervalDuration: number;
   intervalWidth: number;
-  itemRenderer: ItemRenderer<I>;
-  items: I[];
+  itemRenderer: ItemRenderer<any>;
+  items: any[];
   startTime: number;
   width: number;
 
@@ -69,16 +71,16 @@ export interface TimelineProps<
   bodyRenderer?: BodyRenderer;
   children?: ReactElement | null;
   columnRenderer?: ColumnRenderer;
-  groupRenderer?: GroupRenderer<G>;
+  groupRenderer?: GroupRenderer;
   groupTopPadding?: number;
   groupBottomPadding?: number;
   initialScrollTime?: number;
-  itemData?: D;
+  itemData?: any;
   itemHeight?: number;
   minItemWidth?: number;
   minGroupHeight?: number;
-  onItemUpdate?: (item: I) => void;
-  rowRenderer?: RowRenderer<G>;
+  onItemUpdate?: (item: any) => void;
+  rowRenderer?: RowRenderer;
   sidebarHeaderRenderer?: SidebarHeaderRenderer;
   sidebarRenderer?: SidebarRenderer;
   collectionSidebarWidth?: number;
@@ -90,13 +92,11 @@ export interface TimelineProps<
   timebarIntervalRenderer?: TimebarIntervalRenderer;
 }
 
-export default function Timeline<TItem extends Item, G extends Group, D = any>(
-  props: TimelineProps<TItem, G, D>
-): ReactElement {
+export default function Timeline(props: TimelineProps): ReactElement {
   const {
     // Required
     endTime: initialEndTime,
-    collections,
+    groups,
     height,
     intervalDuration,
     intervalWidth,
@@ -153,7 +153,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
   const [itemMap, rowMap] = useMemo(() => {
     gridRef.current?.resetAfterRowIndex(0, false);
     return getTimelineData({
-      collections,
+      groups,
       items,
       intervals,
       itemHeight,
@@ -164,7 +164,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
       groupBottomPadding,
     });
   }, [
-    collections,
+    groups,
     items,
     intervals,
     itemHeight,
@@ -306,7 +306,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
     [itemMap, onItemUpdate]
   );
 
-  const upsertItem = useCallback<UpsertItem<TItem>>(
+  const upsertItem = useCallback<UpsertItem<any>>(
     item => {
       const row = Array.from(rowMap.values()).find(
         ({ group }) => group.id === item.groupId
@@ -382,7 +382,7 @@ export default function Timeline<TItem extends Item, G extends Group, D = any>(
         end: snapTime(start + duration, snapDuration),
         groupId: row?.group.id || defaultGroupId || '',
         ...rest,
-      } as TItem;
+      };
 
       if (!item.groupId) {
         throw new Error('No group id provided');

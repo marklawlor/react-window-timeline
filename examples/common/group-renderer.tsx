@@ -1,13 +1,11 @@
-import React, { CSSProperties, ReactElement, useContext } from 'react';
+import React, { ReactElement, useContext } from 'react';
 
-import { Group, TimelineContext, GroupRendererProps } from '../../src';
+import { TimelineContext, GroupRendererProps } from '../../src';
 
 export default function GroupRenderer({
   group,
   style,
-}: GroupRendererProps<
-  Group & { color: CSSProperties['backgroundColor'] }
->): ReactElement {
+}: GroupRendererProps): ReactElement {
   const { timebarHeaderHeight, timebarIntervalHeight } = useContext(
     TimelineContext
   );
@@ -18,7 +16,7 @@ export default function GroupRenderer({
     <div style={{ ...style, backgroundColor: 'white' }}>
       <div
         style={{
-          backgroundColor: group.color,
+          backgroundColor: (group as any).color,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',

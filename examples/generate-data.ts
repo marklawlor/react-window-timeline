@@ -1,10 +1,10 @@
 import { CSSProperties } from 'react';
-import { Group, Item } from '../src/timeline-data';
+import { ChildGroup, Item } from '../src/timeline-data';
 import range from '../src/utils/range';
 
 export function randomGroups(
   n: number
-): Array<Group & { color: CSSProperties['backgroundColor'] }> {
+): Array<ChildGroup & { color: CSSProperties['backgroundColor'] }> {
   return range(0, n).map(index => ({
     id: index.toString(),
     name: `Group ${index}`,
@@ -13,7 +13,7 @@ export function randomGroups(
 }
 
 export function randomItems(
-  groups: Group[],
+  groups: ChildGroup[],
   nMin: number,
   nMax: number,
   startTime: number,

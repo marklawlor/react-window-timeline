@@ -1,12 +1,12 @@
 import Row from './row';
 import { snapTime } from './utils/time';
 
-export interface Collection {
+export interface ParentGroup {
   name: string;
-  groups: Group[];
+  groups: ChildGroup[];
 }
 
-export interface Group {
+export interface ChildGroup {
   id: string;
   name: string;
 }
@@ -18,22 +18,22 @@ export interface Item {
   end: number;
 }
 
-export type MappedItem<T extends Item = Item> = T & { row: Row<T> };
+export type MappedItem = Item & { row: Row };
 
-export type ItemMap<T extends Item = Item> = Map<string, MappedItem<T>>;
+export type ItemMap = Map<string, MappedItem>;
 
-export type RowMap<T extends Item> = Map<number, Row<T>>;
+export type RowMap = Map<number, Row>;
 
-export type RowCollection<T extends Item> = {
+export type RowCollection = {
   index: number;
   name: string;
-  rows: Array<Row<T>>;
+  rows: Array<Row>;
 };
 
-export interface MapTimelineDateOptions<T extends Item> {
-  collections: Collection[];
+export interface MapTimelineDateOptions {
+  groups: ParentGroup[] | ChildGroup[];
   intervals: number[];
-  items: T[];
+  items: Item[];
   itemHeight: number;
   timebarHeight: number;
   snapDuration: number;
@@ -42,8 +42,12 @@ export interface MapTimelineDateOptions<T extends Item> {
   groupBottomPadding: number;
 }
 
-export function getTimelineData<T extends Item>({
-  collections,
+function isParentGroup(group: ParentGroup | ChildGroup): group is ParentGroup {
+  return 'groups' in group;
+}
+
+export function getTimelineData({
+  groups,
   intervals,
   itemHeight,
   items,
@@ -52,23 +56,25 @@ export function getTimelineData<T extends Item>({
   minGroupHeight,
   groupTopPadding,
   groupBottomPadding,
-}: MapTimelineDateOptions<T>): [ItemMap<T>, RowMap<T>] {
-  const itemMap: ItemMap<T> = new Map();
-  const rowMap: RowMap<T> = new Map();
+}: MapTimelineDateOptions): [ItemMap, RowMap] {
+  const itemMap: ItemMap = new Map();
+  const rowMap: RowMap = new Map();
 
-  const groupMap: Record<string, Row<T>> = {};
+  const groupMap: Record<string, Row> = {};
 
   let rowCounter = 0;
 
-  for (const [index, { groups, name }] of collections.entries()) {
-    const collection: RowCollection<T> = {
+  for (const [index, group] of groups.entries()) {
+    const groupArray = isParentGroup(group) ? group.groups : [group];
+
+    const collection: RowCollection = {
       index,
-      name,
+      name: group.name,
       rows: [],
     };
 
-    for (const group of groups.values()) {
-      const row = new Row<T>({
+    for (const group of groupArray) {
+      const row = new Row({
         group,
         collection,
         index: rowCounter++,
@@ -109,9 +115,6 @@ export function getTimelineData<T extends Item>({
   return [itemMap, rowMap];
 }
 
-export function getUnmappedItem<T extends Item>({
-  row,
-  ...item
-}: MappedItem<T>): T {
-  return (item as unknown) as T;
+export function getUnmappedItem({ row, ...item }: MappedItem): Item {
+  return item;
 }
