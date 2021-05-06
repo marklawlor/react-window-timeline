@@ -14,7 +14,6 @@ export default function BodyRenderer(props: BodyRendererProps): ReactElement {
     event => {
       createItemAtCursor(event, {
         id: `new_${Date.now()}`,
-        defaultGroupId: 'UNASSIGNED_PROJECT',
         duration: intervalDuration,
       });
     },

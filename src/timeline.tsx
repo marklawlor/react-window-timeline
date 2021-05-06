@@ -364,7 +364,12 @@ export default function Timeline(props: TimelineProps): ReactElement {
       const left = mouseLeft + scrollLeft - outerElement.left - sidebarWidth;
       const top = mouseTop + scrollTop - outerElement.top - timebarHeight;
 
-      const row = Array.from(rowMap.values()).find(row => {
+      if (top < 0) {
+        return null;
+      }
+
+      const rowArray = Array.from(rowMap.values());
+      const row = rowArray.find(row => {
         return row.top <= top && row.top + row.height >= top;
       });
 
@@ -383,7 +388,11 @@ export default function Timeline(props: TimelineProps): ReactElement {
         id,
         start,
         end: snapTime(start + duration, snapDuration),
-        groupId: row?.group.id || defaultGroupId || '',
+        groupId:
+          row?.group.id ||
+          defaultGroupId ||
+          rowArray[top > 0 ? rowArray.length - 1 : 0].group.id ||
+          '',
         ...rest,
       };
 
