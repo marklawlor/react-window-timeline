@@ -140,7 +140,9 @@ export default function Timeline(props: TimelineProps): ReactElement {
 
   const startTime = snapTime(initialStartTime, snapDuration);
   const endTime = snapTime(initialEndTime, snapDuration);
-  const timebarHeight = timebarIntervalHeight + timebarHeaderHeight;
+
+  // Timebar = Header + Day interval + hour interval
+  const timebarHeight = timebarIntervalHeight * 2 + timebarHeaderHeight;
   const sidebarWidth = collectionSidebarWidth + groupSidebarWidth;
 
   const intervals = useMemo(() => {
