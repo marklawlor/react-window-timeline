@@ -4,11 +4,13 @@ import { snapTime } from './utils/time';
 export interface ParentGroup {
   name: string;
   groups: ChildGroup[];
+  [index: string]: any;
 }
 
 export interface ChildGroup {
   id: string;
   name: string;
+  [index: string]: any;
 }
 
 export interface Item {

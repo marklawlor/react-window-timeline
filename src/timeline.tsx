@@ -30,6 +30,7 @@ import TimelineContext, {
 } from './context';
 
 import innerElementType from './inner-element';
+
 import {
   ChildGroup,
   getTimelineData,

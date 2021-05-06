@@ -233,6 +233,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                   rowIndex={collection.index}
                   isOdd={collection.index % 2 === 1}
                   isEven={collection.index % 2 === 0}
+                  isParentGroup={true}
                   style={{
                     position: 'sticky',
                     display: 'block',
@@ -272,6 +273,7 @@ export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
                   group={row.group}
                   isOdd={row.index % 2 === 1}
                   isEven={row.index % 2 === 0}
+                  isParentGroup={false}
                   style={{
                     position: 'sticky',
                     display: 'block',

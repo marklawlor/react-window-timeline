@@ -28,10 +28,12 @@ export default function InteractiveExample(): ReactElement {
 
   const [groups] = useState(() => [
     {
+      id: '1',
       name: 'my-collection',
       groups: childGroups.slice(0, childGroups.length / 2),
     },
     {
+      id: '2',
       name: 'my-collection2',
       groups: childGroups.slice(childGroups.length / 2),
     },

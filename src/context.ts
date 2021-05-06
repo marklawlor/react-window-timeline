@@ -29,11 +29,12 @@ export interface ItemRendererProps<T extends Item = Item> {
 
 export type GroupRenderer = FC<GroupRendererProps>;
 export interface GroupRendererProps {
-  rowIndex: number;
-  isOdd: boolean;
-  isEven: boolean;
-  style: CSSProperties;
   group: ChildGroup;
+  isEven: boolean;
+  isOdd: boolean;
+  isParentGroup: boolean;
+  rowIndex: number;
+  style: CSSProperties;
 }
 
 export type TimebarIntervalRenderer = FC<TimebarIntervalRendererProps>;
@@ -45,8 +46,14 @@ export interface TimebarIntervalRendererProps {
   style: CSSProperties;
 }
 
-export type RowRenderer = FC<GroupRendererProps>;
-export type RowRendererProps = GroupRendererProps;
+export type RowRenderer = FC<RowRendererProps>;
+export interface RowRendererProps {
+  group: ChildGroup;
+  isEven: boolean;
+  isOdd: boolean;
+  rowIndex: number;
+  style: CSSProperties;
+}
 
 export type ColumnRenderer = FC<ColumnRendererProps>;
 export type ColumnRendererProps = Omit<TimebarIntervalRendererProps, 'isDay'>;
