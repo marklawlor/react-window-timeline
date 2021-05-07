@@ -90,20 +90,18 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
                 node.style.transition = '';
                 node.style.transform = `translate(${translateX}px, ${translateY}px)`;
 
-                const updatedValues = getUpdatedItem(
-                  event,
-                  item,
-                  UpdateItemAction.MOVE
-                ) as Interaction;
+                const updatedValues = getUpdatedItem(event, item, {
+                  action: UpdateItemAction.MOVE,
+                  snapToRow: false,
+                }) as Interaction;
 
                 setInteraction(updatedValues);
               },
               end(event) {
-                const updatedItem = getUpdatedItem(
-                  event,
-                  item,
-                  UpdateItemAction.MOVE
-                );
+                const updatedItem = getUpdatedItem(event, item, {
+                  action: UpdateItemAction.MOVE,
+                  snapToRow: false,
+                });
 
                 if (!updatedItem) {
                   node.style.transform = '';
@@ -169,11 +167,10 @@ const InteractiveItem: ItemRenderer = ({ item, style }) => {
                 });
               },
               end(event) {
-                const updatedItem = getUpdatedItem(
-                  event,
-                  item,
-                  UpdateItemAction.RESIZE
-                );
+                const updatedItem = getUpdatedItem(event, item, {
+                  action: UpdateItemAction.RESIZE,
+                  snapToRow: false,
+                });
 
                 if (!updatedItem) {
                   throw new Error('Failed to move item');

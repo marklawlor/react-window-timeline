@@ -84,7 +84,10 @@ export enum UpdateItemAction {
 export type GetUpdatedItem = (
   event: React.MouseEvent<HTMLElement, MouseEvent>,
   item: Item,
-  action?: UpdateItemAction
+  options: {
+    action?: UpdateItemAction;
+    snapToRow?: boolean;
+  }
 ) => null | Item;
 
 export type CreateItemAtCursor = (

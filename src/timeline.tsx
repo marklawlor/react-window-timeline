@@ -220,7 +220,7 @@ export default function Timeline(props: TimelineProps): ReactElement {
   });
 
   const getUpdatedItem: TimelineContextValue['getUpdatedItem'] = useCallback(
-    (event, item, action) => {
+    (event, item, { action, snapToRow }) => {
       if (!event.currentTarget) {
         return null;
       }
@@ -267,15 +267,19 @@ export default function Timeline(props: TimelineProps): ReactElement {
       };
 
       if (action !== UpdateItemAction.RESIZE) {
-        const row = Array.from(rowMap.values()).find(row => {
+        const rowArray = Array.from(rowMap.values());
+        const row = Array.from(rowArray).find(row => {
           return row.top <= top && row.top + row.height > top;
         });
 
-        if (!row) {
+        if (!row && !snapToRow) {
           return null;
         }
 
-        updatedValues.groupId = row.group.id;
+        updatedValues.groupId =
+          row?.group.id ||
+          rowArray[top > 0 ? rowArray.length - 1 : 0].group.id ||
+          '';
       }
 
       return updatedValues;
