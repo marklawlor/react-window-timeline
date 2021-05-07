@@ -220,7 +220,7 @@ export default function Timeline(props: TimelineProps): ReactElement {
   });
 
   const getUpdatedItem: TimelineContextValue['getUpdatedItem'] = useCallback(
-    (event, item, { action, snapToRow }) => {
+    (event, item, { action, snapToRow } = {}) => {
       if (!event.currentTarget) {
         return null;
       }
