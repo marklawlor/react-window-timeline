@@ -70,6 +70,7 @@ export function getTimelineData({
     const groupArray = isParentGroup(group) ? group.groups : [group];
 
     const collection: RowCollection = {
+      ...group,
       index,
       name: group.name,
       rows: [],
