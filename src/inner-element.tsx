@@ -8,7 +8,7 @@ import { rangeInclusive } from './utils/range';
 import TimelineContext from './context';
 import { getPositionAtTime } from './utils/time';
 import { ChildGroup, Item } from './timeline-data';
-import { eachDayOfInterval } from 'date-fns';
+import eachDayOfInterval from './utils/each-day-of-interval';
 
 export default forwardRef<HTMLDivElement, { style: CSSProperties }>(
   function TimelineInner({ style }, ref) {
