@@ -388,7 +388,7 @@ export default function Timeline(props: TimelineProps): ReactElement {
         )
       );
 
-      const item = {
+      const item: Item = {
         id,
         start,
         end: snapTime(start + duration, snapDuration),
