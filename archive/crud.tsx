@@ -1,5 +1,5 @@
-import React, { createContext, ReactNode, useRef, useState } from 'react';
-import { debounce } from 'lodash';
+import React, { createContext, ReactNode, useRef, useState } from "react";
+import { debounce } from "lodash";
 
 export interface Interaction {
   start: number;
@@ -17,8 +17,7 @@ const InteractionContext = createContext<InteractionContextValue>({
   setInteraction: () => undefined,
 });
 
-export function InteractionContextProvider(props: { children?: ReactNode }) {
-  const [interaction, setInteraction] = useState<Interaction | null>(null);
+export function CrudContextProvider(props: { children?: ReactNode }) {
   const handleInteraction = useRef<typeof setInteraction>(
     debounce(setInteraction, 0, { leading: true })
   );

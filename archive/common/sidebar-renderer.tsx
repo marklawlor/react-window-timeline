@@ -1,6 +1,6 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement } from "react";
 
-import { SidebarRendererProps } from '../../src';
+import { SidebarRendererProps } from "../../src";
 
 export default function SidebarRenderer({
   style,
@@ -11,8 +11,8 @@ export default function SidebarRenderer({
       {...props}
       style={{
         ...style,
-        backgroundColor: 'white',
-        borderRight: '1px solid grey',
+        backgroundColor: "white",
+        borderRight: "1px solid grey",
       }}
     ></div>
   );

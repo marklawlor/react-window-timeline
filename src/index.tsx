@@ -1,9 +1,7 @@
-export * from './timeline';
-export { default } from './timeline';
+export * from "./timeline";
 
-export * from './context';
-export { default as TimelineContext } from './context';
+export * from "./interfaces";
 
-export * from './timeline-data';
+export * from "./use-timeline";
 
-export { areEqual } from 'react-window';
+export { areEqual } from "react-window";

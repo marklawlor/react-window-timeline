@@ -8,7 +8,7 @@ export function getIntervals(
 
   // Throw an exception if start date is after end date or if any date is `Invalid Date`
   if (!(startTime <= endTime)) {
-    throw new Error('Invalid start and end time');
+    throw new Error("Invalid start and end time");
   }
 
   const dates = [];
@@ -23,7 +23,7 @@ export function getIntervals(
   return dates;
 }
 
-export function snapTime(time: number, snapDuration: number): number {
+export function getSnappedTime(time: number, snapDuration: number): number {
   if (snapDuration <= 0) {
     return time;
   }
@@ -34,26 +34,26 @@ export function snapTime(time: number, snapDuration: number): number {
 export function getPositionAtTime(
   time: number,
   startTime: number,
-  intervalDuration: number,
-  intervalWidth: number
+  visualIntervalDuration: number,
+  intervalWidth: number,
+  paddingLeft: number
 ) {
-  const numberOfIntervals = (time - startTime) / intervalDuration;
-  const left = numberOfIntervals * intervalWidth;
-
-  return left;
+  const visualInterval = (time - startTime) / visualIntervalDuration;
+  return paddingLeft + visualInterval * intervalWidth;
 }
 
 export function getTimeAtPosition(
   left: number,
   startTime: number,
-  intervalDuration: number,
+  visualIntervalDuration: number,
   intervalWidth: number,
+  paddingLeft: number,
   snapDuration: number
 ): number {
-  const numberOfIntervals = left / intervalWidth;
+  const numberOfIntervals = (left - paddingLeft) / intervalWidth;
 
-  return snapTime(
-    numberOfIntervals * intervalDuration + startTime,
+  return getSnappedTime(
+    numberOfIntervals * visualIntervalDuration + startTime,
     snapDuration
   );
 }

@@ -1,7 +1,8 @@
 {
   "version": "0.9.7",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
@@ -15,39 +16,21 @@
     "url": "https://github.com/marklawlor/react-window-timeline.git"
   },
   "scripts": {
-    "start": "tsdx watch --tsconfig ./tsconfig.build.json",
-    "build": "tsdx build --tsconfig ./tsconfig.build.json",
-    "test": "tsdx test --passWithNoTests",
-    "lint": "tsdx lint",
-    "prepare": "npm run build",
+    "build": "rollup --config --configPlugin typescript",
     "size": "size-limit",
     "analyze": "size-limit --why",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
-    "postdeploy": "npm run build-storybook && bs --directory storybook-static"
+    "storybook": "start-storybook -p 6006"
   },
   "peerDependencies": {
     "react": ">=16"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
   },
   "keywords": [
     "react",
     "timeline",
     "calendar"
   ],
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
-  },
   "name": "react-window-timeline",
   "author": "Mark Lawlor",
-  "module": "dist/react-window-timeline.esm.js",
   "size-limit": [
     {
       "path": "dist/react-window-timeline.cjs.production.min.js",
@@ -59,51 +42,47 @@
     }
   ],
   "devDependencies": {
-    "@babel/core": "^7.13.8",
-    "@interactjs/actions": "1.10.3",
-    "@interactjs/auto-scroll": "1.10.3",
-    "@interactjs/auto-start": "1.10.3",
-    "@interactjs/interact": "1.10.3",
-    "@interactjs/modifiers": "1.10.3",
-    "@interactjs/types": "1.10.3",
-    "@interactjs/utils": "1.10.3",
-    "@size-limit/preset-small-lib": "4.9.2",
-    "@storybook/addon-essentials": "6.1.20",
-    "@storybook/addon-links": "6.1.20",
-    "@storybook/addons": "6.1.20",
-    "@storybook/react": "6.1.20",
-    "@types/lodash": "^4.14.168",
-    "@types/react": "17.0.2",
-    "@types/react-dom": "17.0.1",
-    "@types/react-virtualized-auto-sizer": "^1.0.0",
-    "@types/react-window": "1.8.2",
-    "@types/uuid": "8.3.0",
-    "babel-jest": "^26.6.3",
+    "@babel/core": "^7.14.8",
+    "@interactjs/actions": "1.10.11",
+    "@interactjs/auto-scroll": "1.10.11",
+    "@interactjs/auto-start": "1.10.11",
+    "@interactjs/interact": "1.10.11",
+    "@interactjs/modifiers": "1.10.11",
+    "@interactjs/types": "1.10.11",
+    "@interactjs/utils": "1.10.11",
+    "@rollup/plugin-node-resolve": "^13.0.2",
+    "@rollup/plugin-typescript": "^8.2.3",
+    "@size-limit/preset-small-lib": "5.0.1",
+    "@storybook/addon-essentials": "6.3.5",
+    "@storybook/addon-links": "6.3.5",
+    "@storybook/addons": "6.3.5",
+    "@storybook/react": "6.3.5",
+    "@types/lodash": "4.14.171",
+    "@types/react": "17.0.14",
+    "@types/react-dom": "17.0.9",
+    "@types/react-virtualized-auto-sizer": "1.0.1",
+    "@types/react-window": "1.8.4",
+    "@types/uuid": "8.3.1",
+    "babel-jest": "27.0.6",
     "babel-loader": "8.2.2",
-    "branchsite": "^4.0.3",
-    "date-fns": "2.17.0",
-    "husky": "5.1.1",
-    "lodash": "^4.17.21",
-    "np": "^7.4.0",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
-    "react-is": "17.0.1",
+    "date-fns": "2.23.0",
+    "husky": "7.0.1",
+    "lodash": "4.17.21",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-is": "17.0.2",
     "react-virtualized-auto-sizer": "^1.0.4",
-    "size-limit": "4.9.2",
-    "tsdx": "0.14.1",
-    "tslib": "2.1.0",
-    "typescript": "4.2.2",
+    "rollup": "^2.53.3",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-node-externals": "^2.2.0",
+    "size-limit": "5.0.1",
+    "transform-parser": "^1.0.1",
+    "tslib": "2.3.0",
+    "typescript": "4.3.5",
     "uuid": "8.3.2"
   },
   "dependencies": {
     "react-merge-refs": "^1.1.0",
     "react-window": "1.8.6"
-  },
-  "resolutions": {
-    "**/@typescript-eslint/eslint-plugin": "4.15.2",
-    "**/@typescript-eslint/parser": "4.15.2",
-    "**/jest": "26.6.3",
-    "**/ts-jest": "26.5.2",
-    "**/typescript": "4.2.2"
   }
 }

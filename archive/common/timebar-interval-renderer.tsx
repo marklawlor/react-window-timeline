@@ -1,7 +1,7 @@
-import React, { ReactElement, useContext } from 'react';
+import React, { ReactElement, useContext } from "react";
 
-import { TimebarIntervalRendererProps, TimelineContext } from '../../src';
-import InteractionContext from '../interactive/interaction-context';
+import { TimebarIntervalRendererProps, TimelineContext } from "../../src";
+import InteractionContext from "../interaction-context";
 
 function getLocale() {
   return navigator.languages && navigator.languages.length
@@ -43,16 +43,16 @@ export default function TimebarIntervalRenderer({
       <div
         style={{
           ...style,
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderRight: '1px solid grey',
-          borderBottom: '1px solid grey',
-          backgroundColor: isActive ? 'red' : 'white',
+          justifyContent: "center",
+          alignItems: "center",
+          borderRight: "1px solid grey",
+          borderBottom: "1px solid grey",
+          backgroundColor: isActive ? "red" : "white",
         }}
       >
         {new Date(time).toLocaleString(getLocale(), {
-          weekday: 'long',
-          day: 'numeric',
+          weekday: "long",
+          day: "numeric",
         } as Intl.DateTimeFormatOptions)}
       </div>
     );
@@ -62,15 +62,15 @@ export default function TimebarIntervalRenderer({
     <div
       style={{
         ...style,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRight: '1px solid grey',
-        borderBottom: '1px solid grey',
-        backgroundColor: isActive ? 'red' : 'white',
+        justifyContent: "center",
+        alignItems: "center",
+        borderRight: "1px solid grey",
+        borderBottom: "1px solid grey",
+        backgroundColor: isActive ? "red" : "white",
       }}
     >
       {new Date(time).toLocaleString(getLocale(), {
-        timeStyle: 'short',
+        timeStyle: "short",
       } as Intl.DateTimeFormatOptions)}
     </div>
   );

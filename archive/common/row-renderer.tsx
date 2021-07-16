@@ -1,7 +1,7 @@
-import React, { ReactElement, useContext } from 'react';
+import React, { ReactElement, useContext } from "react";
 
-import { RowRendererProps } from '../../src';
-import InteractionContext from '../interactive/interaction-context';
+import { RowRendererProps } from "../../src";
+import InteractionContext from "../interaction-context";
 
 export default function RowRenderer({
   group,
@@ -15,8 +15,8 @@ export default function RowRenderer({
     <div
       style={{
         ...style,
-        backgroundColor: isActive ? 'red' : undefined,
-        borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+        backgroundColor: isActive ? "red" : undefined,
+        borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
       }}
     />
   );

@@ -2,7 +2,7 @@ export interface EachDayOfIntervalOptions {
   start: number;
   end: number;
 }
-export default function eachDayOfInterval({
+export function eachDayOfInterval({
   start,
   end,
 }: EachDayOfIntervalOptions): Date[] {
@@ -10,7 +10,7 @@ export default function eachDayOfInterval({
 
   // Throw an exception if start date is after end date or if any date is `Invalid Date`
   if (!(currentDate.getTime() <= new Date(end).getTime())) {
-    throw new Error('Invalid interval');
+    throw new Error("Invalid interval");
   }
   const dates = [];
 

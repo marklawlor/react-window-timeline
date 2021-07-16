@@ -5,5 +5,4 @@ node_modules
 dist
 storybook-static
 
-# Only use yarn, as we need to use resolutions due to TSDX not supporting Typescript 4
-package-lock.json
+.vim

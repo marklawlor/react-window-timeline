@@ -1,6 +1,6 @@
-import React, { ReactElement, useContext } from 'react';
+import React, { ReactElement, useContext } from "react";
 
-import { TimelineContext, GroupRendererProps } from '../../src';
+import { TimelineContext, GroupRendererProps } from "../../src";
 
 export default function GroupRenderer({
   group,
@@ -13,21 +13,21 @@ export default function GroupRenderer({
   const timebarHeight = timebarHeaderHeight + timebarIntervalHeight;
 
   return (
-    <div style={{ ...style, backgroundColor: 'white' }}>
+    <div style={{ ...style, backgroundColor: "white" }}>
       <div
         style={{
           backgroundColor: (group as any).color,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderRight: '1px solid grey',
-          height: '100%',
-          overflow: 'visible',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          borderRight: "1px solid grey",
+          height: "100%",
+          overflow: "visible",
         }}
       >
         <span
           style={{
-            position: 'sticky',
+            position: "sticky",
             top: timebarHeight,
           }}
         >
